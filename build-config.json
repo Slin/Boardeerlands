@@ -1,0 +1,30 @@
+{
+	"bundle-id": "co.slindev.boardeerlands",
+	"name": "Boardeerlands",
+	"build-directory": "Builds",
+	"release-directory": "Releases",
+	"cmake-build-type": "Release",
+	"cmake-parameters": "",
+	"cmake-targets~android":
+	[
+		"Rayne",
+		"RaynePhysX",
+		"RayneVulkan",
+		"RayneVR",
+		"RayneOculusMobile",
+		"zlibstatic",
+		"jansson",
+		"png_static",
+		"Boardeerlands"
+	],
+	"permissions~android":
+	[
+		
+	],
+	"keystore~android": "../../AndroidReleaseKeyStore",
+	"appinfo-file-oculus": "Other/appinfo-oculus.json",
+	"dependencies":
+	{
+		
+	}
+}

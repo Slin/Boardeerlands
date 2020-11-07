@@ -205,7 +205,7 @@ namespace BD
 		case 0:
 		case 1:
 		case 2:
-			//RemoveLevelNode(_levelPart[section]);
+			RemoveLevelNode(_levelPart[section]);
 			break;
 		}
 	}
@@ -235,7 +235,7 @@ namespace BD
 		sunLight->ActivateShadows(shadowParameter);
 
 		CreateLevelEntity(RNCSTR("models/stage/gamejam_level_floor.sgm"));
-		//_levelPart[0] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_01.sgm"));
+		_levelPart[0] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_01.sgm"));
 		//_levelPart[1] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_02.sgm"));
 		//_levelPart[2] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_03.sgm"));
 		//_levelPart[3] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_04.sgm"));

@@ -19,6 +19,8 @@
 #include "BDBall.h"
 #include "BDBox.h"
 #include "BDBoxTrigger.h"
+#include "BDWater.h"
+#include "BDBridge.h"
 
 namespace BD
 {
@@ -38,6 +40,7 @@ namespace BD
 		RN::Camera *GetPreviewCamera() const { return _cameraManager.GetPreviewCamera(); }
 		CameraManager &GetCameraManager() { return _cameraManager; }
 		Player *GetPlayer() const { return _player; }
+		int GetCurrentLevelSection() const { return _currentLevelSection; }
 
 		RN::Model *AssignShader(RN::Model *model, Types::MaterialType materialType) const;
 		RN::Model *MakeDeepCopy(RN::Model *model) const;

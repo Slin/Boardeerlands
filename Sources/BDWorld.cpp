@@ -143,11 +143,11 @@ namespace BD
 			}
 		}
 
-		if(_currentLevelSection == 3)
+		if(_currentLevelSection == 4)
 		{
 			if(_player->GetWorldPosition().z < -6.0f)
 			{
-				UnlockLevelSection(3);
+				UnlockLevelSection(4);
 			}
 		}
 	}
@@ -174,6 +174,23 @@ namespace BD
 					material->SetAmbientColor(RN::Color::White());
 					material->SetCullMode(RN::CullMode::None);
                                         
+					RN::Shader::Options *shaderOptions = RN::Shader::Options::WithMesh(lodStage->GetMeshAtIndex(i));
+					shaderOptions->EnableDirectionalLights();
+					shaderOptions->EnableDirectionalShadows();
+					material->SetVertexShader(RN::Renderer::GetActiveRenderer()->GetDefaultShader(RN::Shader::Type::Vertex, shaderOptions));
+					material->SetFragmentShader(RN::Renderer::GetActiveRenderer()->GetDefaultShader(RN::Shader::Type::Fragment, shaderOptions));
+					break;
+				}
+
+				case Types::MaterialWater:
+				{
+					material->SetDepthWriteEnabled(true);
+					material->SetDepthMode(RN::DepthMode::LessOrEqual);
+					material->SetAlphaToCoverage(false);
+					material->SetAmbientColor(RN::Color::White());
+					material->SetCullMode(RN::CullMode::None);
+					material->SetBlendOperation(RN::BlendOperation::Add, RN::BlendOperation::Add);
+
 					RN::Shader::Options *shaderOptions = RN::Shader::Options::WithMesh(lodStage->GetMeshAtIndex(i));
 					shaderOptions->EnableDirectionalLights();
 					shaderOptions->EnableDirectionalShadows();
@@ -251,7 +268,11 @@ namespace BD
 				break;
 
 			case 3:
-				_levelPart[3] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_bridge.sgm"));
+				_levelPart[3]->Downcast<Water>()->MoveTo(RN::Vector3(0.0f, -2.0f, 0.0f), 5.0f);
+				break;
+
+			case 4:
+				_levelPart[4]->Downcast<Bridge>()->MoveTo(RN::Vector3(0.0f, 0.0f, 0.0f), 5.0f);
 				break;
 		}
 	}
@@ -285,8 +306,14 @@ namespace BD
 		_levelPart[0] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_01.sgm"));
 		_levelPart[1] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_02.sgm"));
 		_levelPart[2] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_04.sgm"));
-		
-		//_levelPart[3] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_bridge.sgm"));
+
+		_levelPart[3] = new Water();
+		AddLevelNode(_levelPart[3]->Autorelease());
+		_levelPart[3]->SetWorldPosition(RN::Vector3(0.0f, -0.2f, 0.0f));
+
+		_levelPart[4] = new Bridge();
+		AddLevelNode(_levelPart[4]->Autorelease());
+		_levelPart[4]->SetWorldPosition(RN::Vector3(0.0f, 0.0f, 4.0f));
 
 		Ball *ball = new Ball();
 		AddLevelNode(ball->Autorelease());

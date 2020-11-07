@@ -193,6 +193,16 @@ namespace BD
 
 			globalTranslation = translation;
 		}
+
+		if(World::GetSharedInstance()->GetCurrentLevelSection() <= 3)
+		{
+			RN::Vector3 newPosition = GetWorldPosition() + globalTranslation;
+			if(newPosition.z < -4.5f)
+			{
+				newPosition.z = -4.5f;
+				globalTranslation = newPosition - GetWorldPosition();
+			}
+		}
 		
 		_controller->Move(globalTranslation, delta);
 		_controller->Gravity(-9.81f, delta);

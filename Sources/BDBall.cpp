@@ -23,7 +23,6 @@ namespace BD
 		
 		RN::PhysXMaterial *physicsMaterial = new RN::PhysXMaterial();
 		_physicsBody = new RN::PhysXDynamicBody(RN::PhysXSphereShape::WithRadius(0.25f, physicsMaterial->Autorelease()), 2.0f);
-		_physicsBody->SetPositionOffset(RN::Vector3(0.0f, -0.25f, 0.0f));
 		_physicsBody->SetCollisionFilter(Types::CollisionType::CollisionObject, Types::CollisionType::CollisionAll);
 		AddAttachment(_physicsBody->Autorelease());
 

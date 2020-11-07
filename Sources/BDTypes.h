@@ -26,7 +26,8 @@ namespace BD
 		
 		enum MaterialType
 		{
-			MaterialDefault
+			MaterialDefault,
+			MaterialWater
 		};
 	}
 }

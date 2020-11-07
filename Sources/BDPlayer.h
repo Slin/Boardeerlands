@@ -32,7 +32,7 @@ namespace BD
 		RN::PhysXKinematicController *_controller;
 
 		RN::PhysXDynamicBody *_physicsBody;
-                RN::SceneNode *_physicsBodyNode;
+		RN::SceneNode *_physicsBodyNode;
 
 		RN::Vector3 _previousHeadPosition;
 
@@ -42,6 +42,8 @@ namespace BD
 
 		bool _didActivate;
 		bool _isActivating;
+
+		bool _isJumping;
 		
 		RNDeclareMeta(Player)
 	};

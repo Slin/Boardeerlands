@@ -18,7 +18,8 @@ namespace BD
 		_stickIsPressed(false), 
 		_didSnapTurn(false), 
 		_isActivating(false), 
-		_didActivate(false)
+		_didActivate(false),
+		_isJumping(false)
 	{
 		AddChild(camera);
 
@@ -93,6 +94,28 @@ namespace BD
 		if(!active) _didActivate = false;
 		if(!_didActivate) _isActivating = active;
 		else _isActivating = false;
+
+		if(_isActivating)
+		{
+			World::GetSharedInstance()->UnlockLevelSection(0);
+		}
+
+		if(manager->IsControlToggling(RNCSTR("SPACE")))
+		{
+			if(!_controller->GetIsFalling())
+			{
+				if(!_isJumping)
+				{
+					_controller->Gravity(1.0f, 1.0f);
+				}
+			}
+			
+			_isJumping = true;
+		}
+		else
+		{
+			_isJumping = false;
+		}
 		
 		RN::Vector3 stickTranslation;
 
@@ -172,7 +195,7 @@ namespace BD
 		}
 		
 		_controller->Move(globalTranslation, delta);
-		_controller->Move(RN::Vector3(0.0f, -2.0f * delta, 0.0f), delta);
+		_controller->Gravity(-9.81f, delta);
 		
 		if(vrCamera)
 		{

@@ -17,6 +17,7 @@
 
 #include "BDPlayer.h"
 #include "BDBall.h"
+#include "BDBox.h"
 
 namespace BD
 {
@@ -47,12 +48,14 @@ namespace BD
 		bool GetIsDash() const { return _isDash; }
 		
 		void LoadLevel();
+		void UnlockLevelSection(int section);
 
 	protected:
 		void WillBecomeActive() override;
 		void DidBecomeActive() override;
-
 		void WillUpdate(float delta) override;
+
+		RN::Entity *World::CreateLevelEntity(const RN::String *fileName);
 
 		CameraManager _cameraManager;
 		
@@ -65,9 +68,13 @@ namespace BD
 		RN::PhysXWorld *_physicsWorld;
 
 		Player *_player;
+
+		RN::Entity *_levelPart[5];
 		
 		bool _isPaused;
 		bool _isDash;
+
+		int _currentLevelSection;
 
 		static World *_sharedInstance;
 	};

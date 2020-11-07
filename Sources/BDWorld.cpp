@@ -37,7 +37,7 @@ namespace BD
 		//RN::Kernel::GetSharedInstance()->Exit();
 	}
 
-	World::World(RN::VRWindow *vrWindow) : _vrWindow(nullptr), _physicsWorld(nullptr), _isPaused(false), _isDash(false), _shaderLibrary(nullptr)
+	World::World(RN::VRWindow *vrWindow) : _vrWindow(nullptr), _physicsWorld(nullptr), _isPaused(false), _isDash(false), _shaderLibrary(nullptr), _currentLevelSection(0)
 	{
 		_sharedInstance = this;
 
@@ -180,6 +180,36 @@ namespace BD
 		_levelNodes->RemoveAllObjects();
 	}
 
+	RN::Entity *World::CreateLevelEntity(const RN::String *fileName)
+	{
+		RN::Model *model = AssignShader(RN::Model::WithName(fileName), Types::MaterialDefault);
+		RN::Entity *entity = new RN::Entity(model);
+		AddLevelNode(entity->Autorelease());
+
+		RN::PhysXMaterial *physicsMaterial = new RN::PhysXMaterial();
+		RN::PhysXCompoundShape *shape = RN::PhysXCompoundShape::WithModel(model, physicsMaterial->Autorelease(), true, false);
+		RN::PhysXStaticBody *body = RN::PhysXStaticBody::WithShape(shape);
+		body->SetCollisionFilter(Types::CollisionLevel, Types::CollisionAll);
+		entity->AddAttachment(body);
+
+		return entity;
+	}
+
+	void World::UnlockLevelSection(int section)
+	{
+		if(_currentLevelSection != section) return;
+		_currentLevelSection += 1;
+		
+		switch(section)
+		{
+		case 0:
+		case 1:
+		case 2:
+			//RemoveLevelNode(_levelPart[section]);
+			break;
+		}
+	}
+
 	void World::LoadLevel()
 	{
 		RemoveAllLevelNodes();
@@ -204,40 +234,21 @@ namespace BD
 		shadowParameter.splits[3].biasUnits = 256.0f;
 		sunLight->ActivateShadows(shadowParameter);
 
-		RN::Dictionary *loadOptions = new RN::Dictionary();
-		loadOptions->SetObjectForKey(RN::Number::WithBool(true), RNCSTR("enableDirectionalLights"));
-		loadOptions->SetObjectForKey(RN::Number::WithBool(true), RNCSTR("enableDirectionalShadows"));
-		loadOptions->Autorelease();
-		
-		RN::Model *levelFloorModel = /*AssignShader(*/RN::Model::WithName(RNCSTR("models/stage/gamejam_level_floor.sgm"), loadOptions);//, Types::MaterialDefault);
-		RN::Entity *levelFloorEntity = new RN::Entity(levelFloorModel);
-		AddLevelNode(levelFloorEntity->Autorelease());
+		CreateLevelEntity(RNCSTR("models/stage/gamejam_level_floor.sgm"));
+		//_levelPart[0] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_01.sgm"));
+		//_levelPart[1] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_02.sgm"));
+		//_levelPart[2] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_03.sgm"));
+		//_levelPart[3] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_04.sgm"));
 
-		RN::PhysXMaterial *levelPhysicsMaterial = new RN::PhysXMaterial();
-		RN::PhysXCompoundShape *levelFloorShape = RN::PhysXCompoundShape::WithModel(levelFloorModel, levelPhysicsMaterial->Autorelease(), true);
-		RN::PhysXStaticBody *levelFloorBody = RN::PhysXStaticBody::WithShape(levelFloorShape);
-		levelFloorBody->SetCollisionFilter(Types::CollisionLevel, Types::CollisionAll);
-		levelFloorEntity->AddAttachment(levelFloorBody);
-
-		RN::Model *levelWall1Model = AssignShader(RN::Model::WithName(RNCSTR("models/stage/gamejam_level_wall_01.sgm"), loadOptions), Types::MaterialDefault);
-		RN::Entity *levelWall1Entity = new RN::Entity(levelWall1Model);
-		AddLevelNode(levelWall1Entity->Autorelease());
-
-		RN::Model *levelWall2Model = AssignShader(RN::Model::WithName(RNCSTR("models/stage/gamejam_level_wall_02.sgm"), loadOptions), Types::MaterialDefault);
-		RN::Entity *levelWall2Entity = new RN::Entity(levelWall2Model);
-		AddLevelNode(levelWall2Entity->Autorelease());
-
-		RN::Model *levelWall3Model = AssignShader(RN::Model::WithName(RNCSTR("models/stage/gamejam_level_wall_03.sgm"), loadOptions), Types::MaterialDefault);
-		RN::Entity *levelWall3Entity = new RN::Entity(levelWall3Model);
-		AddLevelNode(levelWall3Entity->Autorelease());
-
-		RN::Model *levelWall4Model = AssignShader(RN::Model::WithName(RNCSTR("models/stage/gamejam_level_wall_04.sgm"), loadOptions), Types::MaterialDefault);
-		RN::Entity *levelWall4Entity = new RN::Entity(levelWall4Model);
-		AddLevelNode(levelWall4Entity->Autorelease());
+		_levelPart[4] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_bridge.sgm"));
 
 		Ball *ball = new Ball();
 		AddLevelNode(ball->Autorelease());
-		ball->SetWorldPosition(RN::Vector3(0.0f, 1.0f, -2.0f));
+		ball->SetWorldPosition(RN::Vector3(3.0f, 1.0f, -10.0f));
+
+		Box *box = new Box();
+		AddLevelNode(box->Autorelease());
+		box->SetWorldPosition(RN::Vector3(0.0f, 2.0f, -2.0f));
 
 		if(!RN::Renderer::IsHeadless())
 		{

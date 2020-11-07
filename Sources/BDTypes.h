@@ -17,6 +17,9 @@ namespace BD
 		enum CollisionType
 		{
 			CollisionLevel = 1 << 0,
+			CollisionPlayerController = 1 << 1,
+			CollisionPlayerBody = 1 << 2,
+			CollisionObject = 1 << 3,
 
 			CollisionAll = 0xffffffff
 		};

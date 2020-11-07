@@ -25,10 +25,10 @@ namespace BD
 	void Application::WillFinishLaunching(RN::Kernel *kernel)
 	{
 		RN::Application::WillFinishLaunching(kernel);
-		if(!RN::Kernel::GetSharedInstance()->GetArguments().HasArgument("pancake", '2d'))
+/*		if(!RN::Kernel::GetSharedInstance()->GetArguments().HasArgument("pancake", '2d'))
 		{
 			SetupVR();
-		}
+		}*/
 	}
 
 	void Application::DidFinishLaunching(RN::Kernel *kernel)

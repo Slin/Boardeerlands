@@ -76,6 +76,9 @@ namespace BD
 		AddAttachment(_physicsWorld->Autorelease());
 
 		LoadLevel();
+
+		_player = new Player(_cameraManager.GetHeadSceneNode());
+		AddNode(_player->Autorelease());
 	}
 
 	void World::DidBecomeActive()
@@ -127,9 +130,13 @@ namespace BD
 					material->SetDepthMode(RN::DepthMode::LessOrEqual);
 					material->SetAlphaToCoverage(false);
 					material->SetAmbientColor(RN::Color::White());
+					material->SetCullMode(RN::CullMode::None);
+                                        
 					RN::Shader::Options *shaderOptions = RN::Shader::Options::WithMesh(lodStage->GetMeshAtIndex(i));
-					material->SetVertexShader(shaderLibrary->GetShaderWithName(RNCSTR("main_vertex"), shaderOptions));
-					material->SetFragmentShader(shaderLibrary->GetShaderWithName(RNCSTR("main_fragment"), shaderOptions));
+					shaderOptions->EnableDirectionalLights();
+					shaderOptions->EnableDirectionalShadows();
+					material->SetVertexShader(RN::Renderer::GetActiveRenderer()->GetDefaultShader(RN::Shader::Type::Vertex, shaderOptions));
+					material->SetFragmentShader(RN::Renderer::GetActiveRenderer()->GetDefaultShader(RN::Shader::Type::Fragment, shaderOptions));
 					break;
 				}
 			}
@@ -176,17 +183,62 @@ namespace BD
 	void World::LoadLevel()
 	{
 		RemoveAllLevelNodes();
+
+		RN::Light *sunLight = new RN::Light(RN::Light::Type::DirectionalLight);
+		sunLight->SetWorldRotation(RN::Vector3(45.0f + 90, -45.0f, 0.0f));
+		AddLevelNode(sunLight);
+
+		RN::ShadowParameter shadowParameter(_cameraManager.GetHeadCamera(), 1024);
+		shadowParameter.distanceBlendFactor = 0.05f;
+		shadowParameter.splits[0].maxDistance = 2.5f;
+		shadowParameter.splits[0].biasFactor = 2.0f;
+		shadowParameter.splits[0].biasUnits = 128.0f;
+		shadowParameter.splits[1].maxDistance = 10.0f;
+		shadowParameter.splits[1].biasFactor = 2.0f;
+		shadowParameter.splits[1].biasUnits = 128.0f;
+		shadowParameter.splits[2].maxDistance = 20.0f;
+		shadowParameter.splits[2].biasFactor = 3.0f;
+		shadowParameter.splits[2].biasUnits = 256.0f;
+		shadowParameter.splits[3].maxDistance = 50.0f;
+		shadowParameter.splits[3].biasFactor = 3.0f;
+		shadowParameter.splits[3].biasUnits = 256.0f;
+		sunLight->ActivateShadows(shadowParameter);
+
+		RN::Dictionary *loadOptions = new RN::Dictionary();
+		loadOptions->SetObjectForKey(RN::Number::WithBool(true), RNCSTR("enableDirectionalLights"));
+		loadOptions->SetObjectForKey(RN::Number::WithBool(true), RNCSTR("enableDirectionalShadows"));
+		loadOptions->Autorelease();
 		
-		RN::Model *levelModel = AssignShader(RN::Model::WithName(RNCSTR("models/template/level.sgm")), Types::MaterialDefault);
-		RN::Entity *levelEntity = new RN::Entity(levelModel);
-		AddLevelNode(levelEntity->Autorelease());
+		RN::Model *levelFloorModel = /*AssignShader(*/RN::Model::WithName(RNCSTR("models/stage/gamejam_level_floor.sgm"), loadOptions);//, Types::MaterialDefault);
+		RN::Entity *levelFloorEntity = new RN::Entity(levelFloorModel);
+		AddLevelNode(levelFloorEntity->Autorelease());
 
 		RN::PhysXMaterial *levelPhysicsMaterial = new RN::PhysXMaterial();
-		RN::PhysXCompoundShape *levelShape = RN::PhysXCompoundShape::WithModel(levelModel, levelPhysicsMaterial->Autorelease(), true);
-		RN::PhysXStaticBody *levelBody = RN::PhysXStaticBody::WithShape(levelShape);
-		levelBody->SetCollisionFilter(Types::CollisionLevel, Types::CollisionAll);
-		levelEntity->AddAttachment(levelBody);
-		
+		RN::PhysXCompoundShape *levelFloorShape = RN::PhysXCompoundShape::WithModel(levelFloorModel, levelPhysicsMaterial->Autorelease(), true);
+		RN::PhysXStaticBody *levelFloorBody = RN::PhysXStaticBody::WithShape(levelFloorShape);
+		levelFloorBody->SetCollisionFilter(Types::CollisionLevel, Types::CollisionAll);
+		levelFloorEntity->AddAttachment(levelFloorBody);
+
+		RN::Model *levelWall1Model = AssignShader(RN::Model::WithName(RNCSTR("models/stage/gamejam_level_wall_01.sgm"), loadOptions), Types::MaterialDefault);
+		RN::Entity *levelWall1Entity = new RN::Entity(levelWall1Model);
+		AddLevelNode(levelWall1Entity->Autorelease());
+
+		RN::Model *levelWall2Model = AssignShader(RN::Model::WithName(RNCSTR("models/stage/gamejam_level_wall_02.sgm"), loadOptions), Types::MaterialDefault);
+		RN::Entity *levelWall2Entity = new RN::Entity(levelWall2Model);
+		AddLevelNode(levelWall2Entity->Autorelease());
+
+		RN::Model *levelWall3Model = AssignShader(RN::Model::WithName(RNCSTR("models/stage/gamejam_level_wall_03.sgm"), loadOptions), Types::MaterialDefault);
+		RN::Entity *levelWall3Entity = new RN::Entity(levelWall3Model);
+		AddLevelNode(levelWall3Entity->Autorelease());
+
+		RN::Model *levelWall4Model = AssignShader(RN::Model::WithName(RNCSTR("models/stage/gamejam_level_wall_04.sgm"), loadOptions), Types::MaterialDefault);
+		RN::Entity *levelWall4Entity = new RN::Entity(levelWall4Model);
+		AddLevelNode(levelWall4Entity->Autorelease());
+
+		Ball *ball = new Ball();
+		AddLevelNode(ball->Autorelease());
+		ball->SetWorldPosition(RN::Vector3(0.0f, 1.0f, -2.0f));
+
 		if(!RN::Renderer::IsHeadless())
 		{
 			RN::Model *skyModel = RN::Model::WithName(RNCSTR("models/template/sky.sgm"));

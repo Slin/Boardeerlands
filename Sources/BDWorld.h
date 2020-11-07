@@ -15,6 +15,9 @@
 #include "BDTypes.h"
 #include "BDCameraManager.h"
 
+#include "BDPlayer.h"
+#include "BDBall.h"
+
 namespace BD
 {
 	class World : public RN::SceneBasic
@@ -32,6 +35,7 @@ namespace BD
 		RN::Camera *GetHeadCamera() const { return _cameraManager.GetHeadCamera(); }
 		RN::Camera *GetPreviewCamera() const { return _cameraManager.GetPreviewCamera(); }
 		CameraManager &GetCameraManager() { return _cameraManager; }
+		Player *GetPlayer() const { return _player; }
 
 		RN::Model *AssignShader(RN::Model *model, Types::MaterialType materialType) const;
 		RN::Model *MakeDeepCopy(RN::Model *model) const;
@@ -59,6 +63,8 @@ namespace BD
 		RN::VRWindow *_vrWindow;
 
 		RN::PhysXWorld *_physicsWorld;
+
+		Player *_player;
 		
 		bool _isPaused;
 		bool _isDash;

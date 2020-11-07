@@ -75,7 +75,7 @@ namespace BD
 		}
 
 		ResetPositionAndRotation();
-		MovePancakeCamera(delta);
+		//MovePancakeCamera(delta);
 		UpdateCameraAmbientColor(delta);
 		//UpdatePreviewCamera(delta);
 		

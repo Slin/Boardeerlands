@@ -18,6 +18,7 @@
 #include "BDPlayer.h"
 #include "BDBall.h"
 #include "BDBox.h"
+#include "BDBoxTrigger.h"
 
 namespace BD
 {
@@ -70,9 +71,12 @@ namespace BD
 		Player *_player;
 
 		RN::Entity *_levelPart[5];
+		BoxTrigger *_boxTriggersSection2[4];
 		
 		bool _isPaused;
 		bool _isDash;
+
+		bool _isOPressed;
 
 		int _currentLevelSection;
 

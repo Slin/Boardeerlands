@@ -108,6 +108,32 @@ namespace BD
 		{
 			Exit();
 		}
+
+		if(RN::InputManager::GetSharedInstance()->IsControlToggling(RNCSTR("O")))
+		{
+			if(!_isOPressed)
+			{
+				UnlockLevelSection(_currentLevelSection);
+			}
+			_isOPressed = true;
+		}
+		else
+		{
+			_isOPressed = false;
+		}
+
+		if(_currentLevelSection == 2)
+		{
+			bool canSwitch = true;
+			for(int i = 0; i < 1; i++)
+			{
+				if(!_boxTriggersSection2[0]->GetIsActive()) canSwitch = false;
+			}
+			if(canSwitch)
+			{
+				UnlockLevelSection(2);
+			}
+		}
 	}
 
 	RN::Model *World::AssignShader(RN::Model *model, Types::MaterialType materialType) const
@@ -235,12 +261,12 @@ namespace BD
 		sunLight->ActivateShadows(shadowParameter);
 
 		CreateLevelEntity(RNCSTR("models/stage/gamejam_level_floor.sgm"));
+		CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_03.sgm"));
 		_levelPart[0] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_01.sgm"));
-		//_levelPart[1] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_02.sgm"));
-		//_levelPart[2] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_03.sgm"));
-		//_levelPart[3] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_04.sgm"));
-
-		_levelPart[4] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_bridge.sgm"));
+		_levelPart[1] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_02.sgm"));
+		_levelPart[2] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_04.sgm"));
+		
+		_levelPart[3] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_bridge.sgm"));
 
 		Ball *ball = new Ball();
 		AddLevelNode(ball->Autorelease());
@@ -249,6 +275,11 @@ namespace BD
 		Box *box = new Box();
 		AddLevelNode(box->Autorelease());
 		box->SetWorldPosition(RN::Vector3(0.0f, 2.0f, -2.0f));
+
+		_boxTriggersSection2[0] = new BoxTrigger();
+		AddLevelNode(_boxTriggersSection2[0]->Autorelease());
+		_boxTriggersSection2[0]->SetWorldPosition(RN::Vector3(1.0f, 0.0f, -2.0f));
+		_boxTriggersSection2[0]->RegisterBox(box);
 
 		if(!RN::Renderer::IsHeadless())
 		{

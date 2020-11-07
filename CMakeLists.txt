@@ -75,6 +75,7 @@ set(SOURCES
 	Sources/BDPlayer.cpp
 	Sources/BDBall.cpp
 	Sources/BDBox.cpp
+	Sources/BDBoxTrigger.cpp
 	Sources/BDWorld.cpp)
 
 set(HEADERS
@@ -83,6 +84,7 @@ set(HEADERS
 	Sources/BDPlayer.h
 	Sources/BDBall.h
 	Sources/BDBox.h
+	Sources/BDBoxTrigger.h
 	Sources/BDWorld.h)
 
 set(RESOURCES

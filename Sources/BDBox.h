@@ -26,6 +26,9 @@ namespace BD
 
 	private:
 		RN::PhysXDynamicBody *_physicsBody;
+		RN::Vector3 _spawnPosition;
+		RN::Quaternion _spawnRotation;
+		bool _isFirstFrame;
 		
 		RNDeclareMeta(Box)
 	};

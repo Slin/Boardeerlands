@@ -29,11 +29,11 @@ namespace BD
 		_controller->SetCollisionFilter(Types::CollisionType::CollisionPlayerController, Types::CollisionType::CollisionAll & ~Types::CollisionType::CollisionPlayerBody);
 		AddAttachment(_controller);
 
-		RN::PhysXCapsuleShape *bodyShape = RN::PhysXCapsuleShape::WithRadius(0.3f, 1.1f, physicsMaterial);
+		RN::PhysXBoxShape *bodyShape = RN::PhysXBoxShape::WithHalfExtents(RN::Vector3(0.3f, 0.6f, 0.3f), physicsMaterial->Autorelease());
 		_physicsBody = new RN::PhysXDynamicBody(bodyShape, 100.0f);
 		_physicsBody->SetPositionOffset(_controller->GetFeetOffset());
-		_physicsBody->SetRotationOffset(RN::Vector3(0.0f, 0.0f, 90.0f));
 		_physicsBody->SetCollisionFilter(Types::CollisionType::CollisionPlayerBody, Types::CollisionType::CollisionObject);
+		_physicsBody->SetEnableGravity(false);
 
 		_physicsBodyNode = new RN::SceneNode();
                 _physicsBodyNode->AddAttachment(_physicsBody->Autorelease());
@@ -213,10 +213,24 @@ namespace BD
 			_camera->SetPosition(RN::Vector3(0.0f, 1.8f, 0.0f));
 		}
 
+		_physicsBody->SetEnableSleeping(false);
 		RN::Vector3 movementVelocity = GetWorldPosition() - _physicsBody->GetWorldPosition();
 		movementVelocity /= delta;
-		_physicsBody->SetEnableSleeping(false);
 		_physicsBody->SetLinearVelocity(movementVelocity);
+
+		RN::Quaternion targetRotation = RN::Vector3(_cameraRotation.GetEulerAngle().x, 0.0f, 0.0f);
+		RN::Quaternion startRotation = _physicsBody->GetWorldRotation();
+		if(targetRotation.GetDotProduct(startRotation) > 0.0f)
+			startRotation = startRotation.GetConjugated();
+		RN::Quaternion rotationSpeed = targetRotation * startRotation;
+		RN::Vector4 axisAngleSpeed = rotationSpeed.GetAxisAngle();
+		if (axisAngleSpeed.w > 180.0f)
+			axisAngleSpeed.w -= 360.0f;
+		RN::Vector3 angularVelocity(axisAngleSpeed.x, axisAngleSpeed.y, axisAngleSpeed.z);
+		angularVelocity *= axisAngleSpeed.w*M_PI;
+		angularVelocity /= 180.0f;
+		angularVelocity /= delta;
+		_physicsBody->SetAngularVelocity(angularVelocity);
 	}
 	
 	bool Player::IsActivatePressed()

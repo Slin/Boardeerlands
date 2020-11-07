@@ -13,7 +13,7 @@ namespace BD
 {
 	RNDefineMeta(Box, RN::Entity)
 	
-	Box::Box()
+	Box::Box() : _isFirstFrame(true)
 	{
 		RN::Dictionary *loadOptions = new RN::Dictionary();
 		loadOptions->SetObjectForKey(RN::Number::WithBool(true), RNCSTR("enableDirectionalLights"));
@@ -37,5 +37,18 @@ namespace BD
 	void Box::Update(float delta)
 	{
 		RN::SceneNode::Update(delta);
+
+		if(_isFirstFrame)
+		{
+			_isFirstFrame = false;
+			_spawnPosition = GetWorldPosition();
+			_spawnRotation = GetWorldRotation();
+		}
+
+		if(GetWorldPosition().y < 0.0f)
+		{
+			SetWorldPosition(_spawnPosition);
+			SetWorldRotation(_spawnRotation);
+		}
 	}
 }

@@ -124,10 +124,10 @@ namespace BD
 
 		if(_currentLevelSection == 1)
 		{
-                  if(_player->GetWorldPosition().y > 1.3f && _player->GetWorldPosition().z < -2.0f)
-		  {
-			UnlockLevelSection(1);
-                  }
+			if(_player->GetWorldPosition().y > 1.3f && _player->GetWorldPosition().z < -2.0f)
+			{
+				UnlockLevelSection(1);
+			}
 		}
 
 		if(_currentLevelSection == 2)
@@ -244,15 +244,15 @@ namespace BD
 		
 		switch(section)
 		{
-		case 0:
-		case 1:
-		case 2:
-			RemoveLevelNode(_levelPart[section]);
-			break;
+			case 0:
+			case 1:
+			case 2:
+				RemoveLevelNode(_levelPart[section]);
+				break;
 
-		case 3:
-			_levelPart[3] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_bridge.sgm"));
-                        break;
+			case 3:
+				_levelPart[3] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_bridge.sgm"));
+				break;
 		}
 	}
 

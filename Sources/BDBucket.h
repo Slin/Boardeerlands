@@ -23,10 +23,16 @@ namespace BD
 		~Bucket();
 		
 		void Update(float delta) override;
+		void SetOtherBucket(Bucket *bucket) { _otherBucket = bucket; }
+
+		int GetFillAmount() const { return _fillAmount; }
 
 	private:
 		RN::PhysXDynamicBody *_physicsBody;
 		bool _isBig;
+
+		int _fillAmount;
+		Bucket *_otherBucket;
 		
 		RNDeclareMeta(Bucket)
 	};

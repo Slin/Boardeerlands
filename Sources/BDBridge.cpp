@@ -15,7 +15,7 @@ namespace BD
 	
 	Bridge::Bridge() : _interpolationTime(0.0f)
 	{
-		SetModel(World::GetSharedInstance()->AssignShader(RN::Model::WithName(RNCSTR("models/stage/gamejam_level_bridge.sgm")), Types::MaterialDefault));
+		SetModel(World::GetSharedInstance()->AssignShader(RN::Model::WithName(RNCSTR("models/stage/bridge.sgm")), Types::MaterialDefault));
 
 		RN::PhysXMaterial *physicsMaterial = new RN::PhysXMaterial();
 		RN::PhysXCompoundShape *shape = RN::PhysXCompoundShape::WithModel(GetModel(), physicsMaterial->Autorelease(), true, false);

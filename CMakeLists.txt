@@ -80,6 +80,7 @@ set(SOURCES
 	Sources/BDBridge.cpp
 	Sources/BDChain.cpp
 	Sources/BDBucket.cpp
+	Sources/BDBucketTrigger.cpp
 	Sources/BDWorld.cpp)
 
 set(HEADERS
@@ -93,6 +94,7 @@ set(HEADERS
 	Sources/BDBridge.h
 	Sources/BDChain.h
 	Sources/BDBucket.h
+	Sources/BDBucketTrigger.h
 	Sources/BDWorld.h)
 
 set(RESOURCES

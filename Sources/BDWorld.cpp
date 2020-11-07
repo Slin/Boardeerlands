@@ -300,11 +300,10 @@ namespace BD
 		shadowParameter.splits[3].biasUnits = 256.0f;
 		sunLight->ActivateShadows(shadowParameter);
 
-		CreateLevelEntity(RNCSTR("models/stage/gamejam_level_floor.sgm"));
-		CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_02.sgm"));
-		_levelPart[0] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_04.sgm"));
-		_levelPart[1] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_03.sgm"));
-		_levelPart[2] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_01.sgm"));
+		CreateLevelEntity(RNCSTR("models/stage/gamejam_level.sgm"));
+		_levelPart[0] = CreateLevelEntity(RNCSTR("models/stage/wall_a.sgm"));
+		_levelPart[1] = CreateLevelEntity(RNCSTR("models/stage/wall_b.sgm"));
+		_levelPart[2] = CreateLevelEntity(RNCSTR("models/stage/wall_c.sgm"));
 
 		_levelPart[3] = new Water();
 		AddLevelNode(_levelPart[3]->Autorelease());
@@ -337,6 +336,9 @@ namespace BD
 		Bucket *bigBucket = new Bucket(true);
 		AddLevelNode(bigBucket->Autorelease());
 		bigBucket->SetWorldPosition(RN::Vector3(-3.0f, 1.0f, -10.0f));
+
+		smallBucket->SetOtherBucket(bigBucket);
+		bigBucket->SetOtherBucket(smallBucket);
 
 		if(!RN::Renderer::IsHeadless())
 		{

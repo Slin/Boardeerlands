@@ -28,7 +28,7 @@ namespace BD
 		RN::PhysXMaterial *physicsMaterial = new RN::PhysXMaterial();
 		_controller = new RN::PhysXKinematicController(0.2f, 1.1f, physicsMaterial->Autorelease(), 0.0f);
 		_controller->SetPositionOffset(_controller->GetFeetOffset());
-		_controller->SetCollisionFilter(Types::CollisionType::CollisionPlayerController, Types::CollisionType::CollisionAll & ~Types::CollisionType::CollisionPlayerBody);
+		_controller->SetCollisionFilter(Types::CollisionType::CollisionPlayerController, Types::CollisionType::CollisionAll & ~Types::CollisionType::CollisionPlayerBody & ~Types::CollisionType::CollisionGrabbedObject);
 		AddAttachment(_controller);
 
 		RN::PhysXCapsuleShape *bodyShape = RN::PhysXCapsuleShape::WithRadius(0.35f, 0.7f, physicsMaterial->Autorelease());
@@ -87,9 +87,19 @@ namespace BD
 
 		if(!vrCamera)
 		{
-			rotation.x = manager->GetMouseDelta().x;
-			rotation.y = manager->GetMouseDelta().y;
-			rotation = -rotation;
+			if(!manager->IsMouseButtonPressed(0))
+			{
+				rotation.x = manager->GetMouseDelta().x;
+				rotation.y = manager->GetMouseDelta().y;
+				rotation = -rotation;
+			}
+			else
+			{
+				_grabberRotation *= RN::Vector3(0.0f, manager->GetMouseDelta().y * 0.25f, -manager->GetMouseDelta().x * 0.25f);
+			}
+
+			_grabberDistance += manager->GetMouseDelta().z * 0.02f;
+			_grabberDistance = std::min(std::max(_grabberDistance, 0.2f), 1.5f);
 		}
 
 		bool active = (int)manager->IsControlToggling(RNCSTR("E")) || manager->IsControlToggling(RNCSTR("Button 1"));
@@ -143,7 +153,7 @@ namespace BD
 						SafeRetain(_grabConstraint);
 						_grabbedBody = grabbedBody;
 						_grabbedBody->SetEnableSleeping(false);
-						_grabbedBody->SetCollisionFilter(Types::CollisionType::CollisionObject, Types::CollisionType::CollisionLevel);
+						_grabbedBody->SetCollisionFilter(Types::CollisionType::CollisionGrabbedObject, Types::CollisionType::CollisionLevel);
 					}
 				}
 			}
@@ -272,7 +282,9 @@ namespace BD
 			_camera->SetPosition(RN::Vector3(0.0f, 1.8f, 0.0f));
 		}
 
-		_grabberBody->SetKinematicTarget(_camera->GetWorldPosition() + _camera->GetForward()*_grabberDistance, _camera->GetWorldRotation() * _grabberRotation);
+		RN::Vector3 grabberTargetRotation = _camera->GetWorldEulerAngle();
+		grabberTargetRotation.y = 0.0f;
+		_grabberBody->SetKinematicTarget(_camera->GetWorldPosition() + _camera->GetForward()*_grabberDistance, RN::Quaternion(grabberTargetRotation) * _grabberRotation);
 
 		_physicsBody->SetEnableSleeping(false);
 		RN::Vector3 movementVelocity = GetWorldPosition() - _physicsBody->GetWorldPosition();

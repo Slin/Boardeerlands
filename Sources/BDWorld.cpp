@@ -122,6 +122,14 @@ namespace BD
 			_isOPressed = false;
 		}
 
+		if(_currentLevelSection == 1)
+		{
+                  if(_player->GetWorldPosition().y > 1.3f && _player->GetWorldPosition().z < -2.0f)
+		  {
+			UnlockLevelSection(1);
+                  }
+		}
+
 		if(_currentLevelSection == 2)
 		{
 			bool canSwitch = true;
@@ -132,6 +140,14 @@ namespace BD
 			if(canSwitch)
 			{
 				UnlockLevelSection(2);
+			}
+		}
+
+		if(_currentLevelSection == 3)
+		{
+			if(_player->GetWorldPosition().z < -6.0f)
+			{
+				UnlockLevelSection(3);
 			}
 		}
 	}
@@ -233,6 +249,10 @@ namespace BD
 		case 2:
 			RemoveLevelNode(_levelPart[section]);
 			break;
+
+		case 3:
+			_levelPart[3] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_bridge.sgm"));
+                        break;
 		}
 	}
 
@@ -266,7 +286,7 @@ namespace BD
 		_levelPart[1] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_02.sgm"));
 		_levelPart[2] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_04.sgm"));
 		
-		_levelPart[3] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_bridge.sgm"));
+		//_levelPart[3] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_bridge.sgm"));
 
 		Ball *ball = new Ball();
 		AddLevelNode(ball->Autorelease());

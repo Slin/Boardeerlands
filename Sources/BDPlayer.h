@@ -43,6 +43,13 @@ namespace BD
 		bool _didActivate;
 		bool _isActivating;
 
+		float _grabberDistance;
+		RN::Quaternion _grabberRotation;
+		RN::SceneNode *_grabberNode;
+		RN::PhysXDynamicBody *_grabberBody;
+		RN::PhysXFixedConstraint *_grabConstraint;
+		RN::PhysXDynamicBody *_grabbedBody;
+
 		bool _isJumping;
 		
 		RNDeclareMeta(Player)

@@ -78,6 +78,8 @@ set(SOURCES
 	Sources/BDBoxTrigger.cpp
 	Sources/BDWater.cpp
 	Sources/BDBridge.cpp
+	Sources/BDChain.cpp
+	Sources/BDBucket.cpp
 	Sources/BDWorld.cpp)
 
 set(HEADERS
@@ -89,6 +91,8 @@ set(HEADERS
 	Sources/BDBoxTrigger.h
 	Sources/BDWater.h
 	Sources/BDBridge.h
+	Sources/BDChain.h
+	Sources/BDBucket.h
 	Sources/BDWorld.h)
 
 set(RESOURCES

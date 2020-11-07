@@ -172,7 +172,6 @@ namespace BD
 					material->SetDepthMode(RN::DepthMode::LessOrEqual);
 					material->SetAlphaToCoverage(false);
 					material->SetAmbientColor(RN::Color::White());
-					material->SetCullMode(RN::CullMode::None);
                                         
 					RN::Shader::Options *shaderOptions = RN::Shader::Options::WithMesh(lodStage->GetMeshAtIndex(i));
 					shaderOptions->EnableDirectionalLights();
@@ -246,7 +245,7 @@ namespace BD
 		AddLevelNode(entity->Autorelease());
 
 		RN::PhysXMaterial *physicsMaterial = new RN::PhysXMaterial();
-		RN::PhysXCompoundShape *shape = RN::PhysXCompoundShape::WithModel(model, physicsMaterial->Autorelease(), true, false);
+		RN::PhysXCompoundShape *shape = RN::PhysXCompoundShape::WithModel(model, physicsMaterial->Autorelease(), true);
 		RN::PhysXStaticBody *body = RN::PhysXStaticBody::WithShape(shape);
 		body->SetCollisionFilter(Types::CollisionLevel, Types::CollisionAll);
 		entity->AddAttachment(body);
@@ -302,10 +301,10 @@ namespace BD
 		sunLight->ActivateShadows(shadowParameter);
 
 		CreateLevelEntity(RNCSTR("models/stage/gamejam_level_floor.sgm"));
-		CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_03.sgm"));
-		_levelPart[0] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_01.sgm"));
-		_levelPart[1] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_02.sgm"));
-		_levelPart[2] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_04.sgm"));
+		CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_02.sgm"));
+		_levelPart[0] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_04.sgm"));
+		_levelPart[1] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_03.sgm"));
+		_levelPart[2] = CreateLevelEntity(RNCSTR("models/stage/gamejam_level_wall_01.sgm"));
 
 		_levelPart[3] = new Water();
 		AddLevelNode(_levelPart[3]->Autorelease());
@@ -327,6 +326,17 @@ namespace BD
 		AddLevelNode(_boxTriggersSection2[0]->Autorelease());
 		_boxTriggersSection2[0]->SetWorldPosition(RN::Vector3(1.0f, 0.0f, -2.0f));
 		_boxTriggersSection2[0]->RegisterBox(box);
+
+		Chain *chain = new Chain(RN::Vector3(2.89f, -2.2f, -5.48f));
+		AddLevelNode(chain->Autorelease());
+
+		Bucket *smallBucket = new Bucket(false);
+		AddLevelNode(smallBucket->Autorelease());
+		smallBucket->SetWorldPosition(RN::Vector3(-2.0f, 1.0f, -10.0f));
+		
+		Bucket *bigBucket = new Bucket(true);
+		AddLevelNode(bigBucket->Autorelease());
+		bigBucket->SetWorldPosition(RN::Vector3(-3.0f, 1.0f, -10.0f));
 
 		if(!RN::Renderer::IsHeadless())
 		{

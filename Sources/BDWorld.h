@@ -21,6 +21,8 @@
 #include "BDBoxTrigger.h"
 #include "BDWater.h"
 #include "BDBridge.h"
+#include "BDChain.h"
+#include "BDBucket.h"
 
 namespace BD
 {

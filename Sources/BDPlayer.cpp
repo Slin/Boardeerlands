@@ -19,7 +19,9 @@ namespace BD
 		_didSnapTurn(false), 
 		_isActivating(false), 
 		_didActivate(false),
-		_isJumping(false)
+		_isJumping(false),
+		_grabConstraint(nullptr),
+		_grabberDistance(0.5f)
 	{
 		AddChild(camera);
 
@@ -29,15 +31,26 @@ namespace BD
 		_controller->SetCollisionFilter(Types::CollisionType::CollisionPlayerController, Types::CollisionType::CollisionAll & ~Types::CollisionType::CollisionPlayerBody);
 		AddAttachment(_controller);
 
-		RN::PhysXBoxShape *bodyShape = RN::PhysXBoxShape::WithHalfExtents(RN::Vector3(0.3f, 0.6f, 0.3f), physicsMaterial->Autorelease());
+		RN::PhysXCapsuleShape *bodyShape = RN::PhysXCapsuleShape::WithRadius(0.35f, 0.7f, physicsMaterial->Autorelease());
 		_physicsBody = new RN::PhysXDynamicBody(bodyShape, 100.0f);
 		_physicsBody->SetPositionOffset(_controller->GetFeetOffset());
+		_physicsBody->SetRotationOffset(RN::Vector3(0.0f, 0.0f, 90.0f));
 		_physicsBody->SetCollisionFilter(Types::CollisionType::CollisionPlayerBody, Types::CollisionType::CollisionObject);
 		_physicsBody->SetEnableGravity(false);
 
 		_physicsBodyNode = new RN::SceneNode();
-                _physicsBodyNode->AddAttachment(_physicsBody->Autorelease());
+      _physicsBodyNode->AddAttachment(_physicsBody->Autorelease());
 		World::GetSharedInstance()->AddNode(_physicsBodyNode);
+
+		_physicsBody->LockMovement(RN::PhysXDynamicBody::LockAxisAngularX | RN::PhysXDynamicBody::LockAxisAngularY | RN::PhysXDynamicBody::LockAxisAngularZ);
+
+		_grabberNode = new RN::SceneNode();
+		AddChild(_grabberNode->Autorelease());
+		RN::PhysXBoxShape *grabberShape = RN::PhysXBoxShape::WithHalfExtents(RN::Vector3(0.01f, 0.01f, 0.01f), physicsMaterial);
+		_grabberBody = new RN::PhysXDynamicBody(grabberShape, 0.0f);
+		_grabberBody->SetEnableKinematic(true);
+		_grabberBody->SetCollisionFilter(Types::CollisionType::CollisionPlayerBody, 0);
+		_grabberNode->AddAttachment(_grabberBody);
 
 		RN::VRCamera *vrCamera = _camera->Downcast<RN::VRCamera>();
 		if(vrCamera)
@@ -58,6 +71,7 @@ namespace BD
 	{
 		SafeRelease(_camera);
 		SafeRelease(_physicsBodyNode);
+		SafeRelease(_grabConstraint);
 	}
 	
 	void Player::Update(float delta)
@@ -92,12 +106,47 @@ namespace BD
 		}
 
 		if(!active) _didActivate = false;
-		if(!_didActivate) _isActivating = active;
-		else _isActivating = false;
+		if(!_didActivate)
+		{
+			_isActivating = active;
+		}
+		else
+		{
+			_isActivating = false;
+		}
+
+		if(!_isActivating && _grabConstraint)
+		{
+			SafeRelease(_grabConstraint);
+			_grabbedBody->SetCollisionFilter(Types::CollisionType::CollisionObject, Types::CollisionType::CollisionAll);
+			_grabbedBody->SetEnableSleeping(false);
+			_grabbedBody = nullptr;
+		}
 
 		if(_isActivating)
 		{
-			World::GetSharedInstance()->UnlockLevelSection(0);
+			if(World::GetSharedInstance()->GetCurrentLevelSection() == 0)
+			{
+				World::GetSharedInstance()->UnlockLevelSection(0);
+			}
+			else if(!_grabConstraint)
+			{
+				RN::PhysXContactInfo contact = World::GetSharedInstance()->GetPhysicsWorld()->CastRay(_camera->GetWorldPosition(), _camera->GetWorldPosition() + _camera->GetForward() * 2.0f, Types::CollisionObject);
+				if(contact.node && contact.node->GetAttachments()->GetFirstObject() && contact.node->GetAttachments()->GetFirstObject()->Downcast<RN::PhysXDynamicBody>())
+				{
+					RN::PhysXDynamicBody *grabbedBody = contact.node->GetAttachments()->GetFirstObject()->Downcast<RN::PhysXDynamicBody>();
+					if(!grabbedBody->GetIsKinematic() && grabbedBody->GetMass() > 0.0f && grabbedBody->GetMass() < 5.0f)
+					{
+						_grabberDistance = std::min(0.5f, _camera->GetWorldPosition().GetDistance(grabbedBody->GetWorldPosition()));
+						_grabberRotation = RN::Quaternion();
+						_grabConstraint = RN::PhysXFixedConstraint::WithBodiesAndOffsets(_grabberBody, RN::Vector3(), RN::Quaternion(), grabbedBody, RN::Vector3(), RN::Quaternion());
+						SafeRetain(_grabConstraint);
+						_grabbedBody = grabbedBody;
+						_grabbedBody->SetEnableSleeping(false);
+						_grabbedBody->SetCollisionFilter(Types::CollisionType::CollisionObject, Types::CollisionType::CollisionLevel);
+					}
+				}
+			}
 		}
 
 		if(manager->IsControlToggling(RNCSTR("SPACE")))
@@ -106,7 +155,7 @@ namespace BD
 			{
 				if(!_isJumping)
 				{
-					_controller->Gravity(1.0f, 1.0f);
+					_controller->Jump(5.0f);
 				}
 			}
 			
@@ -223,24 +272,12 @@ namespace BD
 			_camera->SetPosition(RN::Vector3(0.0f, 1.8f, 0.0f));
 		}
 
+		_grabberBody->SetKinematicTarget(_camera->GetWorldPosition() + _camera->GetForward()*_grabberDistance, _camera->GetWorldRotation() * _grabberRotation);
+
 		_physicsBody->SetEnableSleeping(false);
 		RN::Vector3 movementVelocity = GetWorldPosition() - _physicsBody->GetWorldPosition();
 		movementVelocity /= delta;
 		_physicsBody->SetLinearVelocity(movementVelocity);
-
-		RN::Quaternion targetRotation = RN::Vector3(_cameraRotation.GetEulerAngle().x, 0.0f, 0.0f);
-		RN::Quaternion startRotation = _physicsBody->GetWorldRotation();
-		if(targetRotation.GetDotProduct(startRotation) > 0.0f)
-			startRotation = startRotation.GetConjugated();
-		RN::Quaternion rotationSpeed = targetRotation * startRotation;
-		RN::Vector4 axisAngleSpeed = rotationSpeed.GetAxisAngle();
-		if (axisAngleSpeed.w > 180.0f)
-			axisAngleSpeed.w -= 360.0f;
-		RN::Vector3 angularVelocity(axisAngleSpeed.x, axisAngleSpeed.y, axisAngleSpeed.z);
-		angularVelocity *= axisAngleSpeed.w*M_PI;
-		angularVelocity /= 180.0f;
-		angularVelocity /= delta;
-		_physicsBody->SetAngularVelocity(angularVelocity);
 	}
 	
 	bool Player::IsActivatePressed()

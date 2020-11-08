@@ -130,6 +130,11 @@ namespace BD
 						_titleEntity->GetModel()->GetLODStage(0)->GetMaterialAtIndex(0)->RemoveAllTextures();
 						_titleEntity->GetModel()->GetLODStage(0)->GetMaterialAtIndex(0)->AddTexture(RN::Texture::WithName(RNCSTR("introoutro/intro_2.png")));
 					}
+					else if(_currentIntroScreen == 3)
+					{
+						_titleEntity->GetModel()->GetLODStage(0)->GetMaterialAtIndex(0)->RemoveAllTextures();
+						_titleEntity->GetModel()->GetLODStage(0)->GetMaterialAtIndex(0)->AddTexture(RN::Texture::WithName(RNCSTR("introoutro/intro_3.png")));
+					}
 					else
 					{
 						_isShowingInfo = false;

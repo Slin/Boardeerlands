@@ -17,13 +17,13 @@ namespace BD
 	{
 		_boxes = new RN::Array();
 		
-		_boundingBox.minExtend.x = -0.5f;
+		_boundingBox.minExtend.x = -0.7f;
 		_boundingBox.minExtend.y = 0.0f;
-		_boundingBox.minExtend.z = -0.5f;
+		_boundingBox.minExtend.z = -0.7f;
 
-		_boundingBox.maxExtend.x = 0.5f;
+		_boundingBox.maxExtend.x = 0.7f;
 		_boundingBox.maxExtend.y = 1.0f;
-		_boundingBox.maxExtend.z = 0.5f;
+		_boundingBox.maxExtend.z = 0.7f;
 	}
 	
 	BoxTrigger::~BoxTrigger()

@@ -19,7 +19,7 @@ namespace BD
 		loadOptions->SetObjectForKey(RN::Number::WithBool(true), RNCSTR("enableDirectionalLights"));
 		loadOptions->SetObjectForKey(RN::Number::WithBool(true), RNCSTR("enableDirectionalShadows"));
 		loadOptions->Autorelease();
-		SetModel(RN::Model::WithName(RNCSTR("models/box.sgm"), loadOptions));
+		SetModel(RN::Model::WithName(RNCSTR("models/stage/box.sgm"), loadOptions));
 		
 		RN::PhysXMaterial *physicsMaterial = new RN::PhysXMaterial();
 		_physicsBody = new RN::PhysXDynamicBody(RN::PhysXBoxShape::WithHalfExtents(RN::Vector3(0.35f, 0.35f, 0.35f), physicsMaterial->Autorelease()), 10.0f);

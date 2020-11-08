@@ -38,7 +38,7 @@ namespace BD
 	{
 		RN::SceneNode::Update(delta);
 
-		if(GetWorldPosition().y < -2.0f)
+		if(GetWorldPosition().y < -1.5f)
 		{
 			_fillAmount = _isBig?5:3;
 
@@ -50,7 +50,7 @@ namespace BD
 			if(_otherBucket && _otherBucket->GetWorldPosition().y < GetWorldPosition().y && _otherBucket->GetUp().y > 0.0f && RN::Vector3(_otherBucket->GetWorldPosition().x - GetWorldPosition().x, 0.0f, _otherBucket->GetWorldPosition().z - GetWorldPosition().z).GetLength() < 0.5f)
 			{
 				int fillDiff = std::min(_fillAmount - _otherBucket->_fillAmount, (_isBig?3:5) - _otherBucket->_fillAmount);
-				//RNDebug("Removing " << fillDiff << " from " << (_isBig ? "big" : "small") << " to get " << );
+				RNDebug("Removing " << fillDiff << " from " << (_isBig ? "big" : "small") << " with " << _fillAmount << " into bucket with " << _otherBucket->_fillAmount);
 				_otherBucket->_fillAmount += fillDiff;
 				_fillAmount -= fillDiff;
 			}

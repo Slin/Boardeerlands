@@ -134,9 +134,9 @@ namespace BD
 		if(_currentLevelSection == 2)
 		{
 			bool canSwitch = true;
-			for(int i = 0; i < 1; i++)
+			for(int i = 0; i < 4; i++)
 			{
-				if(!_boxTriggersSection2[0]->GetIsActive()) canSwitch = false;
+				if(!_boxTriggersSection2[i]->GetIsActive()) canSwitch = false;
 			}
 			if(canSwitch)
 			{
@@ -322,14 +322,53 @@ namespace BD
 		AddLevelNode(ball->Autorelease());
 		ball->SetWorldPosition(RN::Vector3(3.0f, 2.0f, -10.0f));
 
-		Box *box = new Box();
-		AddLevelNode(box->Autorelease());
-		box->SetWorldPosition(RN::Vector3(0.0f, 2.0f, -2.0f));
+		Box *box1 = new Box();
+		AddLevelNode(box1->Autorelease());
+		box1->SetWorldPosition(RN::Vector3(1.0f, 2.0f, -1.7f));
+
+		Box *box2 = new Box();
+		AddLevelNode(box2->Autorelease());
+		box2->SetWorldPosition(RN::Vector3(-1.0f, 2.0f, -1.7f));
+
+		Box *box3 = new Box();
+		AddLevelNode(box3->Autorelease());
+		box3->SetWorldPosition(RN::Vector3(-1.0f, 2.0f, 1.7f));
+
+		Box *box4 = new Box();
+		AddLevelNode(box4->Autorelease());
+		box4->SetWorldPosition(RN::Vector3(-1.7f, 2.0f, 1.7f));
 
 		_boxTriggersSection2[0] = new BoxTrigger();
 		AddLevelNode(_boxTriggersSection2[0]->Autorelease());
-		_boxTriggersSection2[0]->SetWorldPosition(RN::Vector3(1.0f, 0.0f, -2.0f));
-		_boxTriggersSection2[0]->RegisterBox(box);
+		_boxTriggersSection2[0]->SetWorldPosition(RN::Vector3(3.5f, 0.0f, 3.5f));
+		_boxTriggersSection2[0]->RegisterBox(box1);
+		_boxTriggersSection2[0]->RegisterBox(box2);
+		_boxTriggersSection2[0]->RegisterBox(box3);
+		_boxTriggersSection2[0]->RegisterBox(box4);
+
+		_boxTriggersSection2[1] = new BoxTrigger();
+		AddLevelNode(_boxTriggersSection2[1]->Autorelease());
+		_boxTriggersSection2[1]->SetWorldPosition(RN::Vector3(-3.5f, 0.0f, 3.5f));
+		_boxTriggersSection2[1]->RegisterBox(box1);
+		_boxTriggersSection2[1]->RegisterBox(box2);
+		_boxTriggersSection2[1]->RegisterBox(box3);
+		_boxTriggersSection2[1]->RegisterBox(box4);
+
+		_boxTriggersSection2[2] = new BoxTrigger();
+		AddLevelNode(_boxTriggersSection2[2]->Autorelease());
+		_boxTriggersSection2[2]->SetWorldPosition(RN::Vector3(3.5f, 0.0f, -3.5f));
+		_boxTriggersSection2[2]->RegisterBox(box1);
+		_boxTriggersSection2[2]->RegisterBox(box2);
+		_boxTriggersSection2[2]->RegisterBox(box3);
+		_boxTriggersSection2[2]->RegisterBox(box4);
+
+		_boxTriggersSection2[3] = new BoxTrigger();
+		AddLevelNode(_boxTriggersSection2[3]->Autorelease());
+		_boxTriggersSection2[3]->SetWorldPosition(RN::Vector3(-3.5f, 0.0f, -3.5f));
+		_boxTriggersSection2[3]->RegisterBox(box1);
+		_boxTriggersSection2[3]->RegisterBox(box2);
+		_boxTriggersSection2[3]->RegisterBox(box3);
+		_boxTriggersSection2[3]->RegisterBox(box4);
 
 		Chain *chain = new Chain(RN::Vector3(2.89f, -2.2f, -5.48f), RN::Vector3(4.3f, 1.1f, -5.0f));
 		AddLevelNode(chain->Autorelease());

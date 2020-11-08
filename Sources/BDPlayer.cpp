@@ -135,11 +135,7 @@ namespace BD
 
 		if(_isActivating)
 		{
-			if(World::GetSharedInstance()->GetCurrentLevelSection() == 0)
-			{
-				World::GetSharedInstance()->UnlockLevelSection(0);
-			}
-			else if(!_grabConstraint)
+			if(!_grabConstraint)
 			{
 				RN::PhysXContactInfo contact = World::GetSharedInstance()->GetPhysicsWorld()->CastRay(_camera->GetWorldPosition(), _camera->GetWorldPosition() + _camera->GetForward() * 2.0f, Types::CollisionObject);
 				if(contact.node && contact.node->GetAttachments()->GetFirstObject() && contact.node->GetAttachments()->GetFirstObject()->Downcast<RN::PhysXDynamicBody>())
@@ -164,13 +160,18 @@ namespace BD
 			}
 		}
 
+		if(World::GetSharedInstance()->GetCurrentLevelSection() == 0 && GetWorldPosition().y > 0.5f)
+		{
+			World::GetSharedInstance()->UnlockLevelSection(0);
+		}
+
 		if(manager->IsControlToggling(RNCSTR("SPACE")))
 		{
 			if(!_controller->GetIsFalling())
 			{
 				if(!_isJumping)
 				{
-					_controller->Jump(5.0f);
+					_controller->Jump(3.5f);
 				}
 			}
 			

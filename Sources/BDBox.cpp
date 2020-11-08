@@ -22,7 +22,7 @@ namespace BD
 		SetModel(RN::Model::WithName(RNCSTR("models/box.sgm"), loadOptions));
 		
 		RN::PhysXMaterial *physicsMaterial = new RN::PhysXMaterial();
-		_physicsBody = new RN::PhysXDynamicBody(RN::PhysXBoxShape::WithHalfExtents(RN::Vector3(0.5f, 0.5f, 0.5f), physicsMaterial->Autorelease()), 10.0f);
+		_physicsBody = new RN::PhysXDynamicBody(RN::PhysXBoxShape::WithHalfExtents(RN::Vector3(0.35f, 0.35f, 0.35f), physicsMaterial->Autorelease()), 10.0f);
 		_physicsBody->SetCollisionFilter(Types::CollisionType::CollisionObject, Types::CollisionType::CollisionAll);
 		AddAttachment(_physicsBody->Autorelease());
 

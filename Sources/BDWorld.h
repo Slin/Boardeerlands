@@ -39,6 +39,7 @@ namespace BD
 		~World();
 
 		RN::PhysXWorld *GetPhysicsWorld() const { return _physicsWorld; }
+		RN::OpenALWorld *GetAudioWorld() const { return _audioWorld; }
 		RN::ShaderLibrary *GetShaderLibrary() const { return _shaderLibrary; }
 		RN::VRCamera *GetVRCamera() const { return _cameraManager.GetVRCamera(); }
 		RN::Camera *GetHeadCamera() const { return _cameraManager.GetHeadCamera(); }
@@ -79,6 +80,7 @@ namespace BD
 		RN::VRWindow *_vrWindow;
 
 		RN::PhysXWorld *_physicsWorld;
+		RN::OpenALWorld *_audioWorld;
 
 		Player *_player;
 

@@ -76,6 +76,17 @@ namespace BD
 		//_physicsWorld->SetSubsteps(1);
 		AddAttachment(_physicsWorld->Autorelease());
 
+		_audioWorld = new RN::OpenALWorld();
+		AddAttachment(_audioWorld->Autorelease());
+
+		RN::OpenALListener *listener = new RN::OpenALListener();
+		_cameraManager.GetHeadCamera()->AddAttachment(listener->Autorelease());
+		_audioWorld->SetListener(listener);
+		
+		RN::OpenALSource *source = _audioWorld->PlaySound(RN::AudioAsset::WithName(RNCSTR("audio/backgroundmusic loop.ogg")));
+		source->SetRepeat(true);
+		source->Play();
+
 		LoadLevel();
 
 		_player = new Player(_cameraManager.GetHeadSceneNode());

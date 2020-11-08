@@ -73,6 +73,7 @@ namespace BD
 	#endif
 #endif
 		_physicsWorld = new RN::PhysXWorld(RN::Vector3(0.0f, -9.81f, 0.0f), pvdServerIP);
+		//_physicsWorld->SetSubsteps(1);
 		AddAttachment(_physicsWorld->Autorelease());
 
 		LoadLevel();
@@ -330,7 +331,7 @@ namespace BD
 		_boxTriggersSection2[0]->SetWorldPosition(RN::Vector3(1.0f, 0.0f, -2.0f));
 		_boxTriggersSection2[0]->RegisterBox(box);
 
-		Chain *chain = new Chain(RN::Vector3(2.89f, -2.2f, -5.48f));
+		Chain *chain = new Chain(RN::Vector3(2.89f, -2.2f, -5.48f), RN::Vector3(4.3f, 1.1f, -5.0f));
 		AddLevelNode(chain->Autorelease());
 
 		Bucket *smallBucket = new Bucket(false);

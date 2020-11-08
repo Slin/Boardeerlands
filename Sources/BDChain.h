@@ -19,14 +19,17 @@ namespace BD
 	class Chain : public RN::SceneNode
 	{
 	public:
-		Chain(RN::Vector3 position);
+		Chain(RN::Vector3 position, RN::Vector3 targetPosition);
 		~Chain();
 		
 		void Update(float delta) override;
 
 	private:
+		RN::Entity *_stoepselEntity;
 		RN::Array *_chainElements;
 		RN::Array *_constraints;
+
+		RN::Vector3 _initialPosition;
 		
 		RNDeclareMeta(Chain)
 	};

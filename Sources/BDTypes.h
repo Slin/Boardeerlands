@@ -21,6 +21,7 @@ namespace BD
 			CollisionPlayerBody = 1 << 2,
 			CollisionObject = 1 << 3,
 			CollisionGrabbedObject = 1 << 4,
+			CollisionChain = 1 << 5,
 
 			CollisionAll = 0xffffffff
 		};

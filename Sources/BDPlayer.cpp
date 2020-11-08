@@ -21,14 +21,14 @@ namespace BD
 		_didActivate(false),
 		_isJumping(false),
 		_grabConstraint(nullptr),
-		_grabberDistance(0.5f)
+		_grabberDistance(0.8f)
 	{
 		AddChild(camera);
 
 		RN::PhysXMaterial *physicsMaterial = new RN::PhysXMaterial();
 		_controller = new RN::PhysXKinematicController(0.2f, 1.1f, physicsMaterial->Autorelease(), 0.0f);
 		_controller->SetPositionOffset(_controller->GetFeetOffset());
-		_controller->SetCollisionFilter(Types::CollisionType::CollisionPlayerController, Types::CollisionType::CollisionAll & ~Types::CollisionType::CollisionPlayerBody & ~Types::CollisionType::CollisionGrabbedObject);
+		_controller->SetCollisionFilter(Types::CollisionType::CollisionPlayerController, Types::CollisionType::CollisionAll & ~Types::CollisionType::CollisionPlayerBody & ~Types::CollisionType::CollisionGrabbedObject & ~Types::CollisionType::CollisionChain);
 		AddAttachment(_controller);
 
 		RN::PhysXCapsuleShape *bodyShape = RN::PhysXCapsuleShape::WithRadius(0.35f, 0.7f, physicsMaterial->Autorelease());
@@ -147,8 +147,13 @@ namespace BD
 					RN::PhysXDynamicBody *grabbedBody = contact.node->GetAttachments()->GetFirstObject()->Downcast<RN::PhysXDynamicBody>();
 					if(!grabbedBody->GetIsKinematic() && grabbedBody->GetMass() > 0.0f && grabbedBody->GetMass() < 5.0f)
 					{
-						_grabberDistance = std::min(0.5f, _camera->GetWorldPosition().GetDistance(grabbedBody->GetWorldPosition()));
+						_grabberDistance = std::max(0.3f, _camera->GetWorldPosition().GetDistance(grabbedBody->GetWorldPosition()));
 						_grabberRotation = RN::Quaternion();
+						if(grabbedBody->GetMass() == 0.51f)
+						{
+							_grabberRotation = GetWorldRotation().GetConjugated() * grabbedBody->GetWorldRotation();
+						}
+						
 						_grabConstraint = RN::PhysXFixedConstraint::WithBodiesAndOffsets(_grabberBody, RN::Vector3(), RN::Quaternion(), grabbedBody, RN::Vector3(), RN::Quaternion());
 						SafeRetain(_grabConstraint);
 						_grabbedBody = grabbedBody;

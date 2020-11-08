@@ -124,7 +124,7 @@ namespace BD
 
 		if(_currentLevelSection == 1)
 		{
-			if(_player->GetWorldPosition().y > 1.3f && _player->GetWorldPosition().z < -2.0f)
+			if(_player->GetWorldPosition().y > 1.3f && (std::abs(_player->GetWorldPosition().x) > 2.0f || std::abs(_player->GetWorldPosition().z) > 2.0f))
 			{
 				UnlockLevelSection(1);
 			}
@@ -140,14 +140,6 @@ namespace BD
 			if(canSwitch)
 			{
 				UnlockLevelSection(2);
-			}
-		}
-
-		if(_currentLevelSection == 4)
-		{
-			if(_player->GetWorldPosition().z < -6.0f)
-			{
-				UnlockLevelSection(4);
 			}
 		}
 	}
@@ -343,14 +335,22 @@ namespace BD
 
 		Bucket *smallBucket = new Bucket(false);
 		AddLevelNode(smallBucket->Autorelease());
-		smallBucket->SetWorldPosition(RN::Vector3(-2.0f, 1.0f, -10.0f));
+		smallBucket->SetWorldPosition(RN::Vector3(-1.6f, 2.0f, -10.1f));
+		smallBucket->SetWorldRotation(RN::Vector3(180.0f, 0.0f, 0.0f));
 		
 		Bucket *bigBucket = new Bucket(true);
 		AddLevelNode(bigBucket->Autorelease());
-		bigBucket->SetWorldPosition(RN::Vector3(-3.0f, 1.0f, -10.0f));
+		bigBucket->SetWorldPosition(RN::Vector3(-1.9f, 2.0f, -10.45f));
+		bigBucket->SetWorldRotation(RN::Vector3(180.0f, 0.0f, 0.0f));
 
 		smallBucket->SetOtherBucket(bigBucket);
 		bigBucket->SetOtherBucket(smallBucket);
+
+		_bucketTrigger = new BucketTrigger();
+		AddLevelNode(_bucketTrigger->Autorelease());
+		_bucketTrigger->SetWorldPosition(RN::Vector3(-1.9f, 1.0f, -10.45f));
+		_bucketTrigger->RegisterBucket(smallBucket);
+		_bucketTrigger->RegisterBucket(bigBucket);
 
 		_playerTrigger = new PlayerTrigger();
 		AddLevelNode(_playerTrigger->Autorelease());

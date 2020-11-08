@@ -20,6 +20,9 @@ namespace BD
 		loadOptions->SetObjectForKey(RN::Number::WithBool(true), RNCSTR("enableDirectionalShadows"));
 		loadOptions->Autorelease();
 		SetModel(RN::Model::WithName(isBig?RNCSTR("models/bucket_big/bucket_big.sgm"):RNCSTR("models/bucket_small/bucket_small.sgm"), loadOptions));
+
+		_waterEntity = new RN::Entity(World::GetSharedInstance()->AssignShader(RN::Model::WithName(isBig?RNCSTR("models/bucket_big/bucket_big_water.sgm"): RNCSTR("models/bucket_small/bucket_small_water.sgm")), Types::MaterialWater));
+		AddChild(_waterEntity->Autorelease());
 		
 		RN::PhysXMaterial *physicsMaterial = new RN::PhysXMaterial();
 		_physicsBody = new RN::PhysXDynamicBody(RN::PhysXConvexHullShape::WithMesh(GetModel()->GetLODStage(0)->GetMeshAtIndex(0), physicsMaterial->Autorelease()), 2.0f);
@@ -41,8 +44,6 @@ namespace BD
 		if(GetWorldPosition().y < -1.5f)
 		{
 			_fillAmount = _isBig?5:3;
-			
-			RNDebug("Fill amount: " << _fillAmount);
 		}
 
 		if(GetUp().y < 0.0f)
@@ -50,16 +51,16 @@ namespace BD
 			if(_otherBucket && _otherBucket->GetWorldPosition().y < GetWorldPosition().y && _otherBucket->GetUp().y > 0.0f && RN::Vector3(_otherBucket->GetWorldPosition().x - GetWorldPosition().x, 0.0f, _otherBucket->GetWorldPosition().z - GetWorldPosition().z).GetLength() < 0.5f)
 			{
 				int otherCanTake = (_isBig ? 3 : 5) - _otherBucket->_fillAmount;
-				int fillDiff = std::min(_fillAmount - _otherBucket->_fillAmount, (_isBig?3:5) - _otherBucket->_fillAmount);
-				RNDebug("Removing " << fillDiff << " from " << (_isBig ? "big" : "small") << " with " << _fillAmount << " into bucket with " << _otherBucket->_fillAmount);
+				int fillDiff = std::min(otherCanTake, _fillAmount);
 				_otherBucket->_fillAmount += fillDiff;
 				_fillAmount -= fillDiff;
 			}
 			else
 			{
 				_fillAmount = 0.0f;
-				RNDebug("Empty bucket");
 			}
 		}
+
+		_waterEntity->SetScale(RN::Vector3(1.0f, _fillAmount/(_isBig?5.0f:3.0f), 1.0f));
 	}
 }

@@ -23,16 +23,12 @@ namespace BD
 		~BucketTrigger();
 
 		void RegisterBucket(Bucket *bucket);
-
-		bool GetIsActive() const { return _isActive; }
 		
 		void Update(float delta) override;
 
 	private:
 		RN::AABB _boundingBox;
 		RN::Array *_buckets;
-
-		bool _isActive;
 
 		RNDeclareMeta(BucketTrigger)
 	};

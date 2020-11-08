@@ -37,5 +37,10 @@ namespace BD
 	void Ball::Update(float delta)
 	{
 		RN::SceneNode::Update(delta);
+
+		if(GetWorldPosition().y < -2.5f)
+		{
+			World::GetSharedInstance()->UnlockLevelSection(5);
+		}
 	}
 }

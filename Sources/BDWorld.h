@@ -23,6 +23,9 @@
 #include "BDBridge.h"
 #include "BDChain.h"
 #include "BDBucket.h"
+#include "BDBucketTrigger.h"
+#include "BDExitDoor.h"
+#include "BDPlayerTrigger.h"
 
 namespace BD
 {
@@ -75,8 +78,10 @@ namespace BD
 
 		Player *_player;
 
-		RN::Entity *_levelPart[5];
+		RN::Entity *_levelPart[7];
 		BoxTrigger *_boxTriggersSection2[4];
+		BucketTrigger *_bucketTrigger;
+		PlayerTrigger *_playerTrigger;
 		
 		bool _isPaused;
 		bool _isDash;

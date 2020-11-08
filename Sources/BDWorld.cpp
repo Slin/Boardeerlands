@@ -273,6 +273,13 @@ namespace BD
 			case 4:
 				_levelPart[4]->Downcast<Bridge>()->MoveTo(RN::Vector3(0.0f, 0.0f, 0.0f), 5.0f);
 				break;
+
+			case 5:
+				RemoveLevelNode(_levelPart[section]);
+				break;
+			case 6:
+				_levelPart[6]->Downcast<ExitDoor>()->MoveTo(RN::Vector3(2.5f, 0.0f, 0.0f), 5.0f);
+				break;
 		}
 	}
 
@@ -313,9 +320,14 @@ namespace BD
 		AddLevelNode(_levelPart[4]->Autorelease());
 		_levelPart[4]->SetWorldPosition(RN::Vector3(0.0f, 0.0f, 4.0f));
 
+		_levelPart[5] = CreateLevelEntity(RNCSTR("models/stage/wall_d.sgm"));
+
+		_levelPart[6] = new ExitDoor();
+		AddLevelNode(_levelPart[6]->Autorelease());
+
 		Ball *ball = new Ball();
 		AddLevelNode(ball->Autorelease());
-		ball->SetWorldPosition(RN::Vector3(3.0f, 1.0f, -10.0f));
+		ball->SetWorldPosition(RN::Vector3(3.0f, 2.0f, -10.0f));
 
 		Box *box = new Box();
 		AddLevelNode(box->Autorelease());
@@ -339,6 +351,10 @@ namespace BD
 
 		smallBucket->SetOtherBucket(bigBucket);
 		bigBucket->SetOtherBucket(smallBucket);
+
+		_playerTrigger = new PlayerTrigger();
+		AddLevelNode(_playerTrigger->Autorelease());
+		_playerTrigger->SetWorldPosition(RN::Vector3(0.0f, 0.0f, 6.5f));
 
 		if(!RN::Renderer::IsHeadless())
 		{

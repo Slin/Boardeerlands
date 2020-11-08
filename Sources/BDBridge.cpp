@@ -35,6 +35,12 @@ namespace BD
 		_targetPosition = position;
 		_interpolationFactor = 0.0f;
 		_interpolationTime = time;
+
+		RN::OpenALSource *source = new RN::OpenALSource(RN::AudioAsset::WithName(RNCSTR("audio/bridge moves.ogg")));
+		source->SetSelfdestruct(true);
+		AddChild(source->Autorelease());
+		source->SetWorldPosition(RN::Vector3(0.0f, 0.0f, -7.0f));
+		source->Play();
 	}
 
 	

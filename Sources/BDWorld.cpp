@@ -166,6 +166,7 @@ namespace BD
 			_isEPressed = false;
 		}
 
+#if RN_BUILD_DEBUG
 		if(RN::InputManager::GetSharedInstance()->IsControlToggling(RNCSTR("O")))
 		{
 			if(!_isOPressed)
@@ -178,6 +179,7 @@ namespace BD
 		{
 			_isOPressed = false;
 		}
+#endif
 
 		if(_currentLevelSection == 1)
 		{
@@ -343,21 +345,26 @@ namespace BD
 			case 1:
 			case 2:
 				RemoveLevelNode(_levelPart[section]);
+				_audioWorld->PlaySound(RN::AudioAsset::WithName(RNCSTR("audio/riddlesuccess.ogg")));
 				break;
 
 			case 3:
 				_levelPart[3]->Downcast<Water>()->MoveTo(RN::Vector3(0.0f, -1.5, 0.0f), 5.0f);
+				_audioWorld->PlaySound(RN::AudioAsset::WithName(RNCSTR("audio/riddlesuccess.ogg")));
 				break;
 
 			case 4:
 				_levelPart[4]->Downcast<Bridge>()->MoveTo(RN::Vector3(0.0f, 0.0f, 0.0f), 5.0f);
+				_audioWorld->PlaySound(RN::AudioAsset::WithName(RNCSTR("audio/riddlesuccess.ogg")));
 				break;
 
 			case 5:
 				RemoveLevelNode(_levelPart[section]);
+				_audioWorld->PlaySound(RN::AudioAsset::WithName(RNCSTR("audio/riddlesuccess.ogg")));
 				break;
 			case 6:
 				_levelPart[6]->Downcast<ExitDoor>()->MoveTo(RN::Vector3(2.5f, 0.0f, 0.0f), 5.0f);
+				_audioWorld->PlaySound(RN::AudioAsset::WithName(RNCSTR("audio/riddlesuccess.ogg")));
 				break;
 		}
 	}

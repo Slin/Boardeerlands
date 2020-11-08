@@ -147,7 +147,7 @@ namespace BD
 						if(!grabbedBody->GetIsKinematic() && grabbedBody->GetMass() > 0.0f && grabbedBody->GetMass() < 5.0f)
 						{
 							_grabberDistance = std::max(0.3f, _camera->GetWorldPosition().GetDistance(grabbedBody->GetWorldPosition()));
-							_grabberRotation = RN::Quaternion();
+							_grabberRotation = RN::Quaternion(RN::Vector3(180.0f, 0.0f, 0.0f));
 							if(grabbedBody->GetMass() == 0.51f)
 							{
 								_grabberRotation = GetWorldRotation().GetConjugated() * grabbedBody->GetWorldRotation();
@@ -174,6 +174,7 @@ namespace BD
 				{
 					if(!_isJumping)
 					{
+						World::GetSharedInstance()->GetAudioWorld()->PlaySound(RN::AudioAsset::WithName(RNCSTR("audio/jump.ogg")));
 						_controller->Jump(3.5f);
 					}
 				}

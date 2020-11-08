@@ -55,6 +55,7 @@ namespace BD
 		void RemoveAllLevelNodes();
 		
 		bool GetIsDash() const { return _isDash; }
+		bool GetIsPaused() const { return _isPaused; }
 		
 		void LoadLevel();
 		void UnlockLevelSection(int section);
@@ -63,6 +64,9 @@ namespace BD
 		void WillBecomeActive() override;
 		void DidBecomeActive() override;
 		void WillUpdate(float delta) override;
+
+		void PlayIntro();
+		void PlayOutro();
 
 		RN::Entity *World::CreateLevelEntity(const RN::String *fileName);
 
@@ -82,10 +86,16 @@ namespace BD
 		BoxTrigger *_boxTriggersSection2[4];
 		BucketTrigger *_bucketTrigger;
 		PlayerTrigger *_playerTrigger;
-		
+
+		RN::Entity *_titleEntity;
+
 		bool _isPaused;
 		bool _isDash;
+		bool _isShowingInfo;
 
+		int _currentIntroScreen;
+
+		bool _isEPressed;
 		bool _isOPressed;
 
 		int _currentLevelSection;

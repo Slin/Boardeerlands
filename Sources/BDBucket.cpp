@@ -61,6 +61,14 @@ namespace BD
 			}
 		}
 
-		_waterEntity->SetScale(RN::Vector3(1.0f, _fillAmount/(_isBig?5.0f:3.0f), 1.0f));
+		if(_fillAmount > 0)
+		{
+			_waterEntity->RemoveFlags(RN::Entity::Flags::Hidden);
+			_waterEntity->SetScale(RN::Vector3(1.0f, _fillAmount / (_isBig ? 5.0f : 3.0f), 1.0f));
+		}
+		else
+		{
+			_waterEntity->AddFlags(RN::Entity::Flags::Hidden);
+		}
 	}
 }

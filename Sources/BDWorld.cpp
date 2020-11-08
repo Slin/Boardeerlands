@@ -37,7 +37,7 @@ namespace BD
 		//RN::Kernel::GetSharedInstance()->Exit();
 	}
 
-	World::World(RN::VRWindow *vrWindow) : _vrWindow(nullptr), _physicsWorld(nullptr), _isPaused(false), _isDash(false), _shaderLibrary(nullptr), _currentLevelSection(0)
+	World::World(RN::VRWindow *vrWindow) : _vrWindow(nullptr), _physicsWorld(nullptr), _isPaused(false), _isDash(false), _shaderLibrary(nullptr), _currentLevelSection(0), _isShowingInfo(true), _currentIntroScreen(0)
 	{
 		_sharedInstance = this;
 
@@ -80,6 +80,9 @@ namespace BD
 
 		_player = new Player(_cameraManager.GetHeadSceneNode());
 		AddNode(_player->Autorelease());
+		_player->Update(0.0f);
+
+		PlayIntro();
 	}
 
 	void World::DidBecomeActive()
@@ -95,7 +98,7 @@ namespace BD
 		_isPaused = false;
 		_isDash = false;
 		RN::VRHMDTrackingState::Mode headsetState = _cameraManager.Update(delta);
-		if(headsetState == RN::VRHMDTrackingState::Mode::Paused)
+		if(headsetState == RN::VRHMDTrackingState::Mode::Paused || _isShowingInfo)
 		{
 			_isPaused = true;
 			_isDash = true;
@@ -108,6 +111,43 @@ namespace BD
 		if(RN::InputManager::GetSharedInstance()->IsControlToggling(RNCSTR("ESC")))
 		{
 			Exit();
+		}
+		
+		if(RN::InputManager::GetSharedInstance()->IsControlToggling(RNCSTR("E")))
+		{
+			if(!_isEPressed)
+			{
+				if(_currentIntroScreen < 10 && _isShowingInfo)
+				{
+					_currentIntroScreen += 1;
+					if(_currentIntroScreen == 1)
+					{
+						_titleEntity->GetModel()->GetLODStage(0)->GetMaterialAtIndex(0)->RemoveAllTextures();
+						_titleEntity->GetModel()->GetLODStage(0)->GetMaterialAtIndex(0)->AddTexture(RN::Texture::WithName(RNCSTR("introoutro/intro_1.png")));
+					}
+					else if(_currentIntroScreen == 2)
+					{
+						_titleEntity->GetModel()->GetLODStage(0)->GetMaterialAtIndex(0)->RemoveAllTextures();
+						_titleEntity->GetModel()->GetLODStage(0)->GetMaterialAtIndex(0)->AddTexture(RN::Texture::WithName(RNCSTR("introoutro/intro_2.png")));
+					}
+					else
+					{
+						_isShowingInfo = false;
+						_player->DidActivate();
+						RemoveNode(_titleEntity);
+					}
+				}
+				else if (_currentIntroScreen >= 10 && _isShowingInfo)
+				{
+					Exit();
+				}
+			}
+			
+			_isEPressed = true;
+		}
+		else
+		{
+			_isEPressed = false;
 		}
 
 		if(RN::InputManager::GetSharedInstance()->IsControlToggling(RNCSTR("O")))
@@ -143,6 +183,36 @@ namespace BD
 				UnlockLevelSection(2);
 			}
 		}
+
+		if(_player->GetWorldPosition().z > 9.5f && !_isShowingInfo)
+		{
+			PlayOutro();
+		}
+	}
+
+
+	void World::PlayOutro()
+	{
+		_currentIntroScreen = 10;
+		_isShowingInfo = true;
+
+		_titleEntity = new RN::Entity(RN::Model::WithName(RNCSTR("introoutro/title.sgm")));
+		_titleEntity->GetModel()->GetLODStage(0)->GetMaterialAtIndex(0)->RemoveAllTextures();
+		_titleEntity->GetModel()->GetLODStage(0)->GetMaterialAtIndex(0)->AddTexture(RN::Texture::WithName(RNCSTR("introoutro/outro.png")));
+		AddNode(_titleEntity->Autorelease());
+		_titleEntity->SetWorldPosition(_cameraManager.GetHeadCamera()->GetWorldPosition() + _cameraManager.GetHeadCamera()->GetForward() * 0.95f + _cameraManager.GetHeadCamera()->GetUp() * 0.0f);
+		_titleEntity->SetWorldRotation(_cameraManager.GetHeadCamera()->GetWorldRotation());
+	}
+
+	void World::PlayIntro()
+	{
+		_currentIntroScreen = 0;
+		_isShowingInfo = true;
+
+		_titleEntity = new RN::Entity(RN::Model::WithName(RNCSTR("introoutro/title.sgm")));
+		AddNode(_titleEntity->Autorelease());
+		_titleEntity->SetWorldPosition(_cameraManager.GetHeadCamera()->GetWorldPosition() + _cameraManager.GetHeadCamera()->GetForward() * 0.95f + _cameraManager.GetHeadCamera()->GetUp() * 0.22f);
+		_titleEntity->SetWorldRotation(_cameraManager.GetHeadCamera()->GetWorldRotation());
 	}
 
 	RN::Model *World::AssignShader(RN::Model *model, Types::MaterialType materialType) const

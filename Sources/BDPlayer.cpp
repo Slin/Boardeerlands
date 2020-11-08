@@ -125,152 +125,156 @@ namespace BD
 			_isActivating = false;
 		}
 
-		if(!_isActivating && _grabConstraint)
+		if(!World::GetSharedInstance()->GetIsPaused())
 		{
-			SafeRelease(_grabConstraint);
-			_grabbedBody->SetCollisionFilter(Types::CollisionType::CollisionObject, Types::CollisionType::CollisionAll);
-			_grabbedBody->SetEnableSleeping(false);
-			_grabbedBody = nullptr;
-		}
 
-		if(_isActivating)
-		{
-			if(!_grabConstraint)
+			if(!_isActivating && _grabConstraint)
 			{
-				RN::PhysXContactInfo contact = World::GetSharedInstance()->GetPhysicsWorld()->CastRay(_camera->GetWorldPosition(), _camera->GetWorldPosition() + _camera->GetForward() * 2.0f, Types::CollisionObject);
-				if(contact.node && contact.node->GetAttachments()->GetFirstObject() && contact.node->GetAttachments()->GetFirstObject()->Downcast<RN::PhysXDynamicBody>())
+				SafeRelease(_grabConstraint);
+				_grabbedBody->SetCollisionFilter(Types::CollisionType::CollisionObject, Types::CollisionType::CollisionAll);
+				_grabbedBody->SetEnableSleeping(false);
+				_grabbedBody = nullptr;
+			}
+
+			if(_isActivating)
+			{
+				if(!_grabConstraint)
 				{
-					RN::PhysXDynamicBody *grabbedBody = contact.node->GetAttachments()->GetFirstObject()->Downcast<RN::PhysXDynamicBody>();
-					if(!grabbedBody->GetIsKinematic() && grabbedBody->GetMass() > 0.0f && grabbedBody->GetMass() < 5.0f)
+					RN::PhysXContactInfo contact = World::GetSharedInstance()->GetPhysicsWorld()->CastRay(_camera->GetWorldPosition(), _camera->GetWorldPosition() + _camera->GetForward() * 2.0f, Types::CollisionObject);
+					if(contact.node && contact.node->GetAttachments()->GetFirstObject() && contact.node->GetAttachments()->GetFirstObject()->Downcast<RN::PhysXDynamicBody>())
 					{
-						_grabberDistance = std::max(0.3f, _camera->GetWorldPosition().GetDistance(grabbedBody->GetWorldPosition()));
-						_grabberRotation = RN::Quaternion();
-						if(grabbedBody->GetMass() == 0.51f)
+						RN::PhysXDynamicBody *grabbedBody = contact.node->GetAttachments()->GetFirstObject()->Downcast<RN::PhysXDynamicBody>();
+						if(!grabbedBody->GetIsKinematic() && grabbedBody->GetMass() > 0.0f && grabbedBody->GetMass() < 5.0f)
 						{
-							_grabberRotation = GetWorldRotation().GetConjugated() * grabbedBody->GetWorldRotation();
+							_grabberDistance = std::max(0.3f, _camera->GetWorldPosition().GetDistance(grabbedBody->GetWorldPosition()));
+							_grabberRotation = RN::Quaternion();
+							if(grabbedBody->GetMass() == 0.51f)
+							{
+								_grabberRotation = GetWorldRotation().GetConjugated() * grabbedBody->GetWorldRotation();
+							}
+							
+							_grabConstraint = RN::PhysXFixedConstraint::WithBodiesAndOffsets(_grabberBody, RN::Vector3(), RN::Quaternion(), grabbedBody, RN::Vector3(), RN::Quaternion());
+							SafeRetain(_grabConstraint);
+							_grabbedBody = grabbedBody;
+							_grabbedBody->SetEnableSleeping(false);
+							_grabbedBody->SetCollisionFilter(Types::CollisionType::CollisionGrabbedObject, Types::CollisionType::CollisionLevel);
 						}
-						
-						_grabConstraint = RN::PhysXFixedConstraint::WithBodiesAndOffsets(_grabberBody, RN::Vector3(), RN::Quaternion(), grabbedBody, RN::Vector3(), RN::Quaternion());
-						SafeRetain(_grabConstraint);
-						_grabbedBody = grabbedBody;
-						_grabbedBody->SetEnableSleeping(false);
-						_grabbedBody->SetCollisionFilter(Types::CollisionType::CollisionGrabbedObject, Types::CollisionType::CollisionLevel);
 					}
 				}
 			}
-		}
 
-		if(World::GetSharedInstance()->GetCurrentLevelSection() == 0 && GetWorldPosition().y > 0.5f)
-		{
-			World::GetSharedInstance()->UnlockLevelSection(0);
-		}
-
-		if(manager->IsControlToggling(RNCSTR("SPACE")))
-		{
-			if(!_controller->GetIsFalling())
+			if(World::GetSharedInstance()->GetCurrentLevelSection() == 0 && GetWorldPosition().y > 0.5f)
 			{
-				if(!_isJumping)
-				{
-					_controller->Jump(3.5f);
-				}
+				World::GetSharedInstance()->UnlockLevelSection(0);
 			}
-			
-			_isJumping = true;
-		}
-		else
-		{
-			_isJumping = false;
-		}
-		
-		RN::Vector3 stickTranslation;
 
-		if(vrCamera)
-		{
-			RN::VRControllerTrackingState leftController = vrCamera->GetControllerTrackingState(0);
-			RN::VRControllerTrackingState rightController = vrCamera->GetControllerTrackingState(1);
-
-			if(std::abs(rightController.thumbstick.x) > 0.25f || (rightController.button[RN::VRControllerTrackingState::Button::Pad] && std::abs(rightController.trackpad.x) > 0.25f))
+			if(manager->IsControlToggling(RNCSTR("SPACE")))
 			{
-				if(!_didSnapTurn)
+				if(!_controller->GetIsFalling())
 				{
-					if(rightController.thumbstick.x > 0.25f || (rightController.button[RN::VRControllerTrackingState::Button::Pad] && rightController.trackpad.x > 0.25f))
+					if(!_isJumping)
 					{
-						_camera->SetRotation(_cameraRotation - RN::Vector3(45.0f, 0.0f, 0.0f));
-						_didSnapTurn = true;
-					}
-					else if(rightController.thumbstick.x < -0.25f || (rightController.button[RN::VRControllerTrackingState::Button::Pad] && rightController.trackpad.x < -0.25f))
-					{
-						_camera->SetRotation(_cameraRotation + RN::Vector3(45.0f, 0.0f, 0.0f));
-						_didSnapTurn = true;
+						_controller->Jump(3.5f);
 					}
 				}
+				
+				_isJumping = true;
 			}
 			else
 			{
-				_didSnapTurn = false;
+				_isJumping = false;
 			}
 			
-			RN::Vector3 controllerRotation = leftController.rotation.GetEulerAngle();
-			controllerRotation.y = 0.0f;
-			stickTranslation += (_cameraRotation * RN::Quaternion(controllerRotation)).GetRotatedVector(RN::Vector3(leftController.thumbstick.x, 0.0f, -leftController.thumbstick.y));
-			stickTranslation.y = 0.0f;
-			stickTranslation.Normalize(1.5f * delta);
-		}
-		
-		_camera->Rotate(rotation * delta * 15.0f);
-		if(_camera->GetEulerAngle().y > 85.0f)
-		{
-			_camera->SetWorldRotation(RN::Vector3(_camera->GetEulerAngle().x, 85.0f, _camera->GetEulerAngle().z));
-		}
-		if(_camera->GetEulerAngle().y < -85.0f)
-		{
-			_camera->SetWorldRotation(RN::Vector3(_camera->GetEulerAngle().x, -85.0f, _camera->GetEulerAngle().z));
-		}
-		_cameraRotation = _camera->GetRotation();
-		
+			RN::Vector3 stickTranslation;
 
-		RN::Vector3 globalTranslation;
-		if(vrCamera)
-		{
-			RN::Vector3 localMovement = vrCamera->GetHead()->GetPosition() - _previousHeadPosition;
-			_previousHeadPosition = vrCamera->GetHead()->GetPosition();
-			localMovement.y = 0.0f;
-
-			globalTranslation += _camera->GetWorldRotation().GetRotatedVector(localMovement) + stickTranslation;
-		}
-		else
-		{
-			RN::Vector3 translation{};
-			if(manager->IsControlToggling(RNSTR("W")))
-				translation -= RN::Vector3(0.f,0.f, 1.0f);
-			if(manager->IsControlToggling(RNSTR("S")))
-				translation += RN::Vector3(0.f, 0.f, 1.0f);
-			if(manager->IsControlToggling(RNSTR("A")))
-				translation -= RN::Vector3(1.0f, 0.f, 0.f);
-			if(manager->IsControlToggling(RNSTR("D")))
-				translation += RN::Vector3(1.0f, 0.f, 0.f);
-			
-			RN::Vector3 cameraRotation = _camera->GetWorldRotation().GetEulerAngle();
-			cameraRotation.y = 0.0f;
-			translation = RN::Quaternion(cameraRotation).GetRotatedVector(translation);
-			translation.y = 0.0f;
-			translation.Normalize(2.5f * delta);
-
-			globalTranslation = translation;
-		}
-
-		if(World::GetSharedInstance()->GetCurrentLevelSection() <= 3)
-		{
-			RN::Vector3 newPosition = GetWorldPosition() + globalTranslation;
-			if(newPosition.z < -4.5f)
+			if(vrCamera)
 			{
-				newPosition.z = -4.5f;
-				globalTranslation = newPosition - GetWorldPosition();
+				RN::VRControllerTrackingState leftController = vrCamera->GetControllerTrackingState(0);
+				RN::VRControllerTrackingState rightController = vrCamera->GetControllerTrackingState(1);
+
+				if(std::abs(rightController.thumbstick.x) > 0.25f || (rightController.button[RN::VRControllerTrackingState::Button::Pad] && std::abs(rightController.trackpad.x) > 0.25f))
+				{
+					if(!_didSnapTurn)
+					{
+						if(rightController.thumbstick.x > 0.25f || (rightController.button[RN::VRControllerTrackingState::Button::Pad] && rightController.trackpad.x > 0.25f))
+						{
+							_camera->SetRotation(_cameraRotation - RN::Vector3(45.0f, 0.0f, 0.0f));
+							_didSnapTurn = true;
+						}
+						else if(rightController.thumbstick.x < -0.25f || (rightController.button[RN::VRControllerTrackingState::Button::Pad] && rightController.trackpad.x < -0.25f))
+						{
+							_camera->SetRotation(_cameraRotation + RN::Vector3(45.0f, 0.0f, 0.0f));
+							_didSnapTurn = true;
+						}
+					}
+				}
+				else
+				{
+					_didSnapTurn = false;
+				}
+				
+				RN::Vector3 controllerRotation = leftController.rotation.GetEulerAngle();
+				controllerRotation.y = 0.0f;
+				stickTranslation += (_cameraRotation * RN::Quaternion(controllerRotation)).GetRotatedVector(RN::Vector3(leftController.thumbstick.x, 0.0f, -leftController.thumbstick.y));
+				stickTranslation.y = 0.0f;
+				stickTranslation.Normalize(1.5f * delta);
 			}
+			
+			_camera->Rotate(rotation * delta * 15.0f);
+			if(_camera->GetEulerAngle().y > 85.0f)
+			{
+				_camera->SetWorldRotation(RN::Vector3(_camera->GetEulerAngle().x, 85.0f, _camera->GetEulerAngle().z));
+			}
+			if(_camera->GetEulerAngle().y < -85.0f)
+			{
+				_camera->SetWorldRotation(RN::Vector3(_camera->GetEulerAngle().x, -85.0f, _camera->GetEulerAngle().z));
+			}
+			_cameraRotation = _camera->GetRotation();
+			
+
+			RN::Vector3 globalTranslation;
+			if(vrCamera)
+			{
+				RN::Vector3 localMovement = vrCamera->GetHead()->GetPosition() - _previousHeadPosition;
+				_previousHeadPosition = vrCamera->GetHead()->GetPosition();
+				localMovement.y = 0.0f;
+
+				globalTranslation += _camera->GetWorldRotation().GetRotatedVector(localMovement) + stickTranslation;
+			}
+			else
+			{
+				RN::Vector3 translation{};
+				if(manager->IsControlToggling(RNSTR("W")))
+					translation -= RN::Vector3(0.f,0.f, 1.0f);
+				if(manager->IsControlToggling(RNSTR("S")))
+					translation += RN::Vector3(0.f, 0.f, 1.0f);
+				if(manager->IsControlToggling(RNSTR("A")))
+					translation -= RN::Vector3(1.0f, 0.f, 0.f);
+				if(manager->IsControlToggling(RNSTR("D")))
+					translation += RN::Vector3(1.0f, 0.f, 0.f);
+				
+				RN::Vector3 cameraRotation = _camera->GetWorldRotation().GetEulerAngle();
+				cameraRotation.y = 0.0f;
+				translation = RN::Quaternion(cameraRotation).GetRotatedVector(translation);
+				translation.y = 0.0f;
+				translation.Normalize(2.5f * delta);
+				
+				globalTranslation = translation;
+			}
+
+			if(World::GetSharedInstance()->GetCurrentLevelSection() <= 3)
+			{
+				RN::Vector3 newPosition = GetWorldPosition() + globalTranslation;
+				if(newPosition.z < -4.5f)
+				{
+					newPosition.z = -4.5f;
+					globalTranslation = newPosition - GetWorldPosition();
+				}
+			}
+			
+			_controller->Move(globalTranslation, delta);
+			_controller->Gravity(-9.81f, delta);
 		}
-		
-		_controller->Move(globalTranslation, delta);
-		_controller->Gravity(-9.81f, delta);
 		
 		if(vrCamera)
 		{

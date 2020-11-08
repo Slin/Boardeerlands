@@ -21,8 +21,38 @@ namespace BD
 		loadOptions->Autorelease();
 		SetModel(RN::Model::WithName(isBig?RNCSTR("models/bucket_big/bucket_big.sgm"):RNCSTR("models/bucket_small/bucket_small.sgm"), loadOptions));
 
-		_waterEntity = new RN::Entity(World::GetSharedInstance()->AssignShader(RN::Model::WithName(isBig?RNCSTR("models/bucket_big/bucket_big_water.sgm"): RNCSTR("models/bucket_small/bucket_small_water.sgm")), Types::MaterialWater));
-		AddChild(_waterEntity->Autorelease());
+		if(isBig)
+		{
+			_waterEntity[0] = new RN::Entity(World::GetSharedInstance()->AssignShader(RN::Model::WithName(RNCSTR("models/bucket_big/bucket_big_water_1.sgm")), Types::MaterialWater));
+			AddChild(_waterEntity[0]->Autorelease());
+
+			_waterEntity[1] = new RN::Entity(World::GetSharedInstance()->AssignShader(RN::Model::WithName(RNCSTR("models/bucket_big/bucket_big_water_2.sgm")), Types::MaterialWater));
+			AddChild(_waterEntity[1]->Autorelease());
+
+			_waterEntity[2] = new RN::Entity(World::GetSharedInstance()->AssignShader(RN::Model::WithName(RNCSTR("models/bucket_big/bucket_big_water_3.sgm")), Types::MaterialWater));
+			AddChild(_waterEntity[2]->Autorelease());
+
+			_waterEntity[3] = new RN::Entity(World::GetSharedInstance()->AssignShader(RN::Model::WithName(RNCSTR("models/bucket_big/bucket_big_water_4.sgm")), Types::MaterialWater));
+			AddChild(_waterEntity[3]->Autorelease());
+
+			_waterEntity[4] = new RN::Entity(World::GetSharedInstance()->AssignShader(RN::Model::WithName(RNCSTR("models/bucket_big/bucket_big_water_5.sgm")), Types::MaterialWater));
+			AddChild(_waterEntity[4]->Autorelease());
+		}
+		else
+		{
+			_waterEntity[0] = new RN::Entity(World::GetSharedInstance()->AssignShader(RN::Model::WithName(RNCSTR("models/bucket_small/bucket_small_water_1.sgm")), Types::MaterialWater));
+			AddChild(_waterEntity[0]->Autorelease());
+
+			_waterEntity[1] = new RN::Entity(World::GetSharedInstance()->AssignShader(RN::Model::WithName(RNCSTR("models/bucket_small/bucket_small_water_2.sgm")), Types::MaterialWater));
+			AddChild(_waterEntity[1]->Autorelease());
+
+			_waterEntity[2] = new RN::Entity(World::GetSharedInstance()->AssignShader(RN::Model::WithName(RNCSTR("models/bucket_small/bucket_small_water_3.sgm")), Types::MaterialWater));
+			AddChild(_waterEntity[2]->Autorelease());
+
+			_waterEntity[3] = nullptr;
+			_waterEntity[4] = nullptr;
+		}
+		
 		
 		RN::PhysXMaterial *physicsMaterial = new RN::PhysXMaterial();
 		_physicsBody = new RN::PhysXDynamicBody(RN::PhysXConvexHullShape::WithMesh(GetModel()->GetLODStage(0)->GetMeshAtIndex(0), physicsMaterial->Autorelease()), 2.0f);
@@ -61,14 +91,15 @@ namespace BD
 			}
 		}
 
+		for(int i = 0; i < 5; i++)
+		{
+			if(_waterEntity[i])
+				_waterEntity[i]->AddFlags(RN::Entity::Flags::Hidden);
+		}
+
 		if(_fillAmount > 0)
 		{
-			_waterEntity->RemoveFlags(RN::Entity::Flags::Hidden);
-			_waterEntity->SetScale(RN::Vector3(1.0f, _fillAmount / (_isBig ? 5.0f : 3.0f), 1.0f));
-		}
-		else
-		{
-			_waterEntity->AddFlags(RN::Entity::Flags::Hidden);
+			_waterEntity[_fillAmount-1]->RemoveFlags(RN::Entity::Flags::Hidden);
 		}
 	}
 }

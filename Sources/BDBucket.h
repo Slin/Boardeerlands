@@ -28,7 +28,7 @@ namespace BD
 		int GetFillAmount() const { return _fillAmount; }
 
 	private:
-		RN::Entity *_waterEntity;
+		RN::Entity *_waterEntity[5];
 		RN::PhysXDynamicBody *_physicsBody;
 		bool _isBig;
 

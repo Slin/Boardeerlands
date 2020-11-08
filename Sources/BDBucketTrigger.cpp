@@ -44,7 +44,12 @@ namespace BD
 			RN::Vector3 localBoxPosition = bucket->GetWorldPosition() - GetWorldPosition();
 			if(_boundingBox.Contains(localBoxPosition) && bucket->GetFillAmount() == 4)
 			{
+				if(World::GetSharedInstance()->GetCurrentLevelSection() == 4)
 				World::GetSharedInstance()->UnlockLevelSection(4);
+				RN::OpenALSource *source = new RN::OpenALSource(RN::AudioAsset::WithName(RNCSTR("audio/button.ogg")));
+				source->SetSelfdestruct(true);
+				AddChild(source->Autorelease());
+				source->Play();
 			}
 		});
 	}

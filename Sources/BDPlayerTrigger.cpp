@@ -34,9 +34,14 @@ namespace BD
 		RN::SceneNode::Update(delta);
 
 		RN::Vector3 localPlayerPosition = World::GetSharedInstance()->GetPlayer()->GetWorldPosition() - GetWorldPosition();
-		if(_boundingBox.Contains(localPlayerPosition))
+		if(_boundingBox.Contains(localPlayerPosition) && World::GetSharedInstance()->GetCurrentLevelSection() == 6)
 		{
 			World::GetSharedInstance()->UnlockLevelSection(6);
+
+			RN::OpenALSource *source = new RN::OpenALSource(RN::AudioAsset::WithName(RNCSTR("audio/button.ogg")));
+			source->SetSelfdestruct(true);
+			AddChild(source->Autorelease());
+			source->Play();
 		}
 	}
 }

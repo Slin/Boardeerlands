@@ -40,6 +40,7 @@ namespace BD
 	{
 		RN::SceneNode::Update(delta);
 
+		bool wasActive = _isActive;
 		_isActive = false;
 		_boxes->Enumerate<Box>([&](Box *box, size_t index, bool &stop){
 			RN::Vector3 localBoxPosition = box->GetWorldPosition() - GetWorldPosition();
@@ -48,5 +49,13 @@ namespace BD
 				_isActive = true;
 			}
 		});
+
+		if(_isActive && !wasActive)
+		{
+			RN::OpenALSource *source = new RN::OpenALSource(RN::AudioAsset::WithName(RNCSTR("audio/button.ogg")));
+			source->SetSelfdestruct(true);
+			AddChild(source->Autorelease());
+			source->Play();
+		}
 	}
 }

@@ -111,9 +111,15 @@ namespace BD
 	{
 		RN::SceneNode::Update(delta);
 
-		if(_stoepselEntity->GetWorldPosition().GetDistance(_initialPosition) > 0.3f)
+		if(_stoepselEntity->GetWorldPosition().GetDistance(_initialPosition) > 0.3f && World::GetSharedInstance()->GetCurrentLevelSection() == 3)
 		{
 			World::GetSharedInstance()->UnlockLevelSection(3);
+
+			RN::OpenALSource *source = new RN::OpenALSource(RN::AudioAsset::WithName(RNCSTR("audio/empty sink.ogg")));
+			source->SetSelfdestruct(true);
+			World::GetSharedInstance()->AddNode(source->Autorelease());
+			source->SetWorldPosition(_initialPosition);
+			source->Play();
 		}
 	}
 }

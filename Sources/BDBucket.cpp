@@ -73,7 +73,16 @@ namespace BD
 
 		if(GetWorldPosition().y < -1.5f)
 		{
+			int previous = _fillAmount;
 			_fillAmount = _isBig?5:3;
+
+			if(_fillAmount > previous)
+			{
+				RN::OpenALSource *source = new RN::OpenALSource(RN::AudioAsset::WithName(RNCSTR("audio/scoopwaterinbucket.ogg")));
+				source->SetSelfdestruct(true);
+				AddChild(source->Autorelease());
+				source->Play();
+			}
 		}
 
 		if(GetUp().y < 0.0f)
@@ -84,9 +93,25 @@ namespace BD
 				int fillDiff = std::min(otherCanTake, _fillAmount);
 				_otherBucket->_fillAmount += fillDiff;
 				_fillAmount -= fillDiff;
+
+				if(fillDiff > 0)
+				{
+					RN::OpenALSource *source = new RN::OpenALSource(RN::AudioAsset::WithName(RNCSTR("audio/pour water.ogg")));
+					source->SetSelfdestruct(true);
+					AddChild(source->Autorelease());
+					source->Play();
+				}
 			}
 			else
 			{
+				if(_fillAmount > 0)
+				{
+					RN::OpenALSource *source = new RN::OpenALSource(RN::AudioAsset::WithName(RNCSTR("audio/pour water.ogg")));
+					source->SetSelfdestruct(true);
+					AddChild(source->Autorelease());
+					source->Play();
+				}
+				
 				_fillAmount = 0.0f;
 			}
 		}
